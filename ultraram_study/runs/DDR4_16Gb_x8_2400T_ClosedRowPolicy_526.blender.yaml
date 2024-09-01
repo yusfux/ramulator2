@@ -1,0 +1,67 @@
+Frontend:
+  impl: SimpleO3
+  memory_access_cycles_recorded_core_0: 187525
+  cycles_recorded_core_0: 3114007
+  llc_mshr_unavailable: 1942
+  llc_read_misses: 11307
+  llc_read_access: 37840
+  llc_write_misses: 17
+  llc_write_access: 1865
+  llc_eviction: 9
+  num_expected_insts: 10000000
+  Translation:
+    impl: RandomTranslation
+
+
+MemorySystem:
+  impl: GenericDRAM
+  total_num_other_requests: 0
+  total_num_write_requests: 0
+  total_num_read_requests: 9381
+  memory_system_cycles: 1167753
+  DRAM:
+    impl: DDR4
+  AddrMapper:
+    impl: RoBaRaCoCh
+
+
+  Controller:
+    impl: Generic
+    id: Channel 0
+    avg_read_latency_0: 60.1864395
+    read_queue_len_avg_0: 0.417754441
+    write_queue_len_0: 0
+    queue_len_0: 503812
+    num_other_reqs_0: 0
+    num_write_reqs_0: 0
+    read_latency_0: 564609
+    priority_queue_len_avg_0: 0.0136826877
+    row_hits_0: 5271
+    priority_queue_len_0: 15978
+    row_misses_0: 2681
+    row_conflicts_0: 1429
+    read_row_misses_0: 2681
+    queue_len_avg_0: 0.431437135
+    read_row_conflicts_core_0: 1429
+    read_row_hits_0: 5271
+    write_queue_len_avg_0: 0
+    read_row_conflicts_0: 1429
+    write_row_misses_0: 0
+    write_row_conflicts_0: 0
+    read_queue_len_0: 487834
+    write_row_hits_0: 0
+    read_row_hits_core_0: 5271
+    read_row_misses_core_0: 2681
+    num_read_reqs_0: 9381
+    Scheduler:
+      impl: FRFCFS
+    RefreshManager:
+      impl: AllBank
+
+
+    RowPolicy:
+      impl: ClosedRowPolicy
+      num_close_reqs: 1099
+
+
+

@@ -1,0 +1,82 @@
+Frontend:
+  impl: SimpleO3
+  memory_access_cycles_recorded_core_3: 1230107
+  cycles_recorded_core_3: 6074444
+  num_expected_insts: 10000000
+  llc_eviction: 3219
+  llc_write_access: 81818
+  llc_write_misses: 414
+  cycles_recorded_core_2: 2560518
+  memory_access_cycles_recorded_core_2: 21297
+  llc_read_access: 454863
+  llc_read_misses: 73362
+  llc_mshr_unavailable: 0
+  cycles_recorded_core_0: 3037715
+  memory_access_cycles_recorded_core_0: 129997
+  cycles_recorded_core_1: 2950959
+  memory_access_cycles_recorded_core_1: 145627
+  Translation:
+    impl: RandomTranslation
+
+
+MemorySystem:
+  impl: GenericDRAM
+  total_num_other_requests: 0
+  total_num_write_requests: 142
+  total_num_read_requests: 73757
+  memory_system_cycles: 2277917
+  DRAM:
+    impl: DDR4
+  AddrMapper:
+    impl: RoBaRaCoCh
+
+
+  Controller:
+    impl: Generic
+    id: Channel 0
+    avg_read_latency_0: 58.9207268
+    priority_queue_len_avg_0: 0.0870936066
+    read_queue_len_avg_0: 1.65889192
+    read_row_misses_core_0: 1253
+    write_row_hits_0: 44
+    read_row_misses_core_2: 416
+    read_queue_len_0: 3778818
+    write_row_conflicts_0: 95
+    write_row_misses_0: 3
+    read_row_hits_core_1: 3809
+    read_row_hits_core_0: 1243
+    read_row_conflicts_core_0: 932
+    queue_len_avg_0: 1.75993109
+    read_row_conflicts_0: 4530
+    read_row_misses_0: 18589
+    read_row_misses_core_3: 14969
+    row_conflicts_0: 4625
+    priority_queue_len_0: 198392
+    read_row_conflicts_core_1: 1417
+    row_hits_0: 50682
+    write_queue_len_avg_0: 0.0139456354
+    read_row_misses_core_1: 1951
+    read_row_hits_0: 50638
+    read_row_hits_core_2: 5
+    write_queue_len_0: 31767
+    row_misses_0: 18592
+    read_row_conflicts_core_2: 321
+    read_row_hits_core_3: 45581
+    read_row_conflicts_core_3: 1860
+    read_latency_0: 4345816
+    num_read_reqs_0: 73757
+    num_write_reqs_0: 142
+    num_other_reqs_0: 0
+    queue_len_0: 4008977
+    Scheduler:
+      impl: FRFCFS
+    RefreshManager:
+      impl: AllBank
+
+
+    RowPolicy:
+      impl: ClosedRowPolicy
+      num_close_reqs: 15149
+
+
+
