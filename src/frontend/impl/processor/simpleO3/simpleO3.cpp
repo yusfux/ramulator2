@@ -82,7 +82,7 @@ class SimpleO3 final : public IFrontEnd, public Implementation {
       m_clk++;
 
       if(m_clk % 10000000 == 0) {
-        m_logger->info("Processor Heartbeat {} cycles.", m_clk);
+        //m_logger->info("Processor Heartbeat {} cycles.", m_clk);
       }
 
       m_llc->tick();

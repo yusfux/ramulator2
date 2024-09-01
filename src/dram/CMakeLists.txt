@@ -8,6 +8,7 @@ target_sources(
 
   impl/DDR3.cpp
   impl/DDR4.cpp
+  impl/ULTRARAM.cpp
   impl/DDR4-VRR.cpp
   impl/DDR4-RVRR.cpp
   impl/DDR5.cpp

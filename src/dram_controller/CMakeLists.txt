@@ -22,11 +22,13 @@ target_sources(
   impl/scheduler/prac_scheduler.cpp
 
   impl/refresh/all_bank_refresh.cpp
+  impl/refresh/no_refresh.cpp
   
   impl/rowpolicy/basic_rowpolicies.cpp
 
   impl/plugin/trace_recorder.cpp
   impl/plugin/cmd_counter.cpp
+  impl/plugin/wr_counter.cpp
   impl/plugin/para.cpp
   impl/plugin/graphene.cpp
   impl/plugin/oracle_rh.cpp
