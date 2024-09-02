@@ -55,7 +55,7 @@ def get_config(base_config, trace_path, trace_comb_file, output_path):
             out_file_name = f'{output_path}/{device}_{org}_{timing}_{row_policy}_{trace}'
 
             config = copy.deepcopy(config_template)
-            config['Frontend']['traces'] = [f'{trace_path}/{trace}' for trace in trace_combs[trace_name]]
+            config['Frontend']['traces'] = [f'{trace_path}/{trace}' for trace in trace_combs[trace]]
             config['MemorySystem']['DRAM']['impl'] = device
             config['MemorySystem']['DRAM']['org']['preset'] = f'{device}_{org}'
             config['MemorySystem']['DRAM']['timing']['preset'] = f'{device}_{timing}'

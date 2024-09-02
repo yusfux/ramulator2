@@ -72,7 +72,7 @@ class SimpleO3 final : public IFrontEnd, public Implementation {
       register_stat(m_llc->s_llc_mshr_unavailable).name("llc_mshr_unavailable");
       
       for (int core_id = 0; core_id < m_cores.size(); core_id++) {
-        // register_stat(m_cores[core_id]->s_insts_retired).name("cycles_retired_core_{}", core_id);
+        register_stat(m_cores[core_id]->s_insts_retired).name("instructions_retired_core_{}", core_id);
         register_stat(m_cores[core_id]->s_cycles_recorded).name("cycles_recorded_core_{}", core_id);
         register_stat(m_cores[core_id]->s_mem_access_cycles).name("memory_access_cycles_recorded_core_{}", core_id);
       }

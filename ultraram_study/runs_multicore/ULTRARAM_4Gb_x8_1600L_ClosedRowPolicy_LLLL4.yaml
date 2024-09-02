@@ -2,19 +2,23 @@ Frontend:
   impl: SimpleO3
   memory_access_cycles_recorded_core_3: 3165761
   cycles_recorded_core_3: 11431003
-  num_expected_insts: 10000000
   llc_eviction: 8007
   llc_write_access: 101249
   llc_write_misses: 406
-  cycles_recorded_core_2: 2658689
   memory_access_cycles_recorded_core_2: 58218
   llc_read_access: 523470
   llc_read_misses: 83017
   llc_mshr_unavailable: 0
+  instructions_retired_core_3: 10000002
+  cycles_recorded_core_2: 2658689
+  instructions_retired_core_0: 37731571
   cycles_recorded_core_0: 3574635
+  instructions_retired_core_2: 43274009
   memory_access_cycles_recorded_core_0: 330840
-  cycles_recorded_core_1: 3349314
+  num_expected_insts: 10000000
+  instructions_retired_core_1: 35721287
   memory_access_cycles_recorded_core_1: 297985
+  cycles_recorded_core_1: 3349314
   Translation:
     impl: RandomTranslation
 

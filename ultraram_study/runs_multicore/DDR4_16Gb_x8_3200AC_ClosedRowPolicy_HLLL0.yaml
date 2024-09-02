@@ -1,20 +1,24 @@
 Frontend:
   impl: SimpleO3
-  memory_access_cycles_recorded_core_3: 1363541
-  cycles_recorded_core_3: 6402437
-  num_expected_insts: 10000000
-  llc_eviction: 5604
-  llc_write_access: 82607
-  llc_write_misses: 406
-  cycles_recorded_core_2: 2584742
-  memory_access_cycles_recorded_core_2: 30553
-  llc_read_access: 457821
-  llc_read_misses: 75502
+  memory_access_cycles_recorded_core_3: 577404
+  cycles_recorded_core_3: 4572082
+  llc_eviction: 282962
+  llc_write_access: 626530
+  llc_write_misses: 1013
+  memory_access_cycles_recorded_core_2: 7615200
+  llc_read_access: 2753135
+  llc_read_misses: 412997
   llc_mshr_unavailable: 0
-  cycles_recorded_core_0: 3117693
-  memory_access_cycles_recorded_core_0: 159956
-  cycles_recorded_core_1: 3000647
-  memory_access_cycles_recorded_core_1: 163670
+  instructions_retired_core_3: 40903148
+  cycles_recorded_core_2: 22880136
+  instructions_retired_core_0: 35952319
+  cycles_recorded_core_0: 6128043
+  instructions_retired_core_2: 10000000
+  memory_access_cycles_recorded_core_0: 1298922
+  num_expected_insts: 10000000
+  instructions_retired_core_1: 64631773
+  memory_access_cycles_recorded_core_1: 324781
+  cycles_recorded_core_1: 3482364
   Translation:
     impl: RandomTranslation
 
@@ -22,9 +26,9 @@ Frontend:
 MemorySystem:
   impl: GenericDRAM
   total_num_other_requests: 0
-  total_num_write_requests: 186
-  total_num_read_requests: 75890
-  memory_system_cycles: 2400914
+  total_num_write_requests: 202269
+  total_num_read_requests: 414007
+  memory_system_cycles: 8580051
   DRAM:
     impl: DDR4
   AddrMapper:
@@ -34,40 +38,40 @@ MemorySystem:
   Controller:
     impl: Generic
     id: Channel 0
-    avg_read_latency_0: 64.9062195
-    priority_queue_len_avg_0: 0.0851704776
-    read_queue_len_avg_0: 1.8087728
-    read_row_misses_core_0: 1242
-    write_row_hits_0: 79
-    read_row_misses_core_2: 446
-    read_queue_len_0: 4342708
-    write_row_conflicts_0: 97
-    write_row_misses_0: 10
-    read_row_hits_core_1: 3850
-    read_row_hits_core_0: 1212
-    read_row_conflicts_core_0: 998
-    queue_len_avg_0: 1.92031038
-    read_row_conflicts_0: 4708
-    read_row_misses_0: 19098
-    read_row_misses_core_3: 15401
-    row_conflicts_0: 4805
-    priority_queue_len_0: 204487
-    read_row_conflicts_core_1: 1408
-    row_hits_0: 52163
-    write_queue_len_avg_0: 0.0263670422
-    read_row_misses_core_1: 2009
-    read_row_hits_0: 52084
-    read_row_hits_core_2: 6
-    write_queue_len_0: 63305
-    row_misses_0: 19108
-    read_row_conflicts_core_2: 304
-    read_row_hits_core_3: 47016
-    read_row_conflicts_core_3: 1998
-    read_latency_0: 4925733
-    num_read_reqs_0: 75890
-    num_write_reqs_0: 186
+    avg_read_latency_0: 165.610489
+    priority_queue_len_avg_0: 0.0464672074
+    read_queue_len_avg_0: 5.55262423
+    read_row_misses_core_0: 13613
+    write_row_hits_0: 23301
+    read_row_misses_core_2: 27080
+    read_queue_len_0: 47641801
+    write_row_conflicts_0: 169129
+    write_row_misses_0: 9831
+    read_row_hits_core_1: 6450
+    read_row_hits_core_0: 9796
+    read_row_conflicts_core_0: 70781
+    queue_len_avg_0: 13.5646009
+    read_row_conflicts_0: 208721
+    read_row_misses_0: 49375
+    read_row_misses_core_3: 5584
+    row_conflicts_0: 377850
+    priority_queue_len_0: 398691
+    read_row_conflicts_core_1: 11877
+    row_hits_0: 179210
+    write_queue_len_avg_0: 7.96550989
+    read_row_misses_core_1: 3098
+    read_row_hits_0: 155909
+    read_row_hits_core_2: 123089
+    write_queue_len_0: 68344478
+    row_misses_0: 59206
+    read_row_conflicts_core_2: 101837
+    read_row_hits_core_3: 16574
+    read_row_conflicts_core_3: 24226
+    read_latency_0: 70533674
+    num_read_reqs_0: 425901
+    num_write_reqs_0: 203370
     num_other_reqs_0: 0
-    queue_len_0: 4610500
+    queue_len_0: 116384970
     Scheduler:
       impl: FRFCFS
     RefreshManager:
@@ -76,7 +80,7 @@ MemorySystem:
 
     RowPolicy:
       impl: ClosedRowPolicy
-      num_close_reqs: 15582
+      num_close_reqs: 22638
 
 
 

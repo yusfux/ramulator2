@@ -1,20 +1,24 @@
 Frontend:
   impl: SimpleO3
-  memory_access_cycles_recorded_core_3: 5592817
-  cycles_recorded_core_3: 17781895
-  num_expected_insts: 10000000
-  llc_eviction: 6555
-  llc_write_access: 121227
-  llc_write_misses: 406
-  cycles_recorded_core_2: 2776041
-  memory_access_cycles_recorded_core_2: 104458
-  llc_read_access: 598578
-  llc_read_misses: 86636
+  memory_access_cycles_recorded_core_3: 1889509
+  cycles_recorded_core_3: 8079687
+  llc_eviction: 398975
+  llc_write_access: 865222
+  llc_write_misses: 1037
+  memory_access_cycles_recorded_core_2: 39156186
+  llc_read_access: 5972620
+  llc_read_misses: 529019
   llc_mshr_unavailable: 0
-  cycles_recorded_core_0: 4218259
-  memory_access_cycles_recorded_core_0: 572751
-  cycles_recorded_core_1: 3947269
-  memory_access_cycles_recorded_core_1: 528514
+  instructions_retired_core_3: 102861068
+  cycles_recorded_core_2: 107112602
+  instructions_retired_core_0: 55947353
+  cycles_recorded_core_0: 17365813
+  instructions_retired_core_2: 10000000
+  memory_access_cycles_recorded_core_0: 5499056
+  num_expected_insts: 10000000
+  instructions_retired_core_1: 157485720
+  memory_access_cycles_recorded_core_1: 1019808
+  cycles_recorded_core_1: 5309626
   Translation:
     impl: RandomTranslation
 
@@ -22,9 +26,9 @@ Frontend:
 MemorySystem:
   impl: GenericDRAM
   total_num_other_requests: 0
-  total_num_write_requests: 549
-  total_num_read_requests: 87022
-  memory_system_cycles: 6668211
+  total_num_write_requests: 290430
+  total_num_read_requests: 530046
+  memory_system_cycles: 40167226
   DRAM:
     impl: ULTRARAM
   AddrMapper:
@@ -34,40 +38,40 @@ MemorySystem:
   Controller:
     impl: Generic
     id: Channel 0
-    avg_read_latency_0: 276.821075
-    priority_queue_len_avg_0: 0.213564023
-    read_queue_len_avg_0: 3.02613568
-    read_row_misses_core_0: 796
-    write_row_hits_0: 270
-    read_row_misses_core_2: 189
-    read_queue_len_0: 20178912
-    write_row_conflicts_0: 208
-    write_row_misses_0: 71
-    read_row_hits_core_1: 9599
-    read_row_hits_core_0: 2021
-    read_row_conflicts_core_0: 2111
-    queue_len_avg_0: 3.4909873
-    read_row_conflicts_0: 10889
-    read_row_misses_0: 17108
-    read_row_misses_core_3: 14319
-    row_conflicts_0: 11097
-    priority_queue_len_0: 1424090
-    read_row_conflicts_core_1: 4479
-    row_hits_0: 59295
-    write_queue_len_avg_0: 0.251287639
-    read_row_misses_core_1: 1804
-    read_row_hits_0: 59025
-    read_row_hits_core_2: 137
-    write_queue_len_0: 1675639
-    row_misses_0: 17179
-    read_row_conflicts_core_2: 1436
-    read_row_hits_core_3: 47268
-    read_row_conflicts_core_3: 2863
-    read_latency_0: 24312088
-    num_read_reqs_0: 87826
-    num_write_reqs_0: 549
+    avg_read_latency_0: 566.55249
+    priority_queue_len_avg_0: 0.0303710308
+    read_queue_len_avg_0: 7.10343599
+    read_row_misses_core_0: 4521
+    write_row_hits_0: 38940
+    read_row_misses_core_2: 22167
+    read_queue_len_0: 285325325
+    write_row_conflicts_0: 234683
+    write_row_misses_0: 16786
+    read_row_hits_core_1: 15530
+    read_row_hits_core_0: 14292
+    read_row_conflicts_core_0: 108557
+    queue_len_avg_0: 18.8573112
+    read_row_conflicts_0: 279667
+    read_row_misses_0: 37146
+    read_row_misses_core_3: 8942
+    row_conflicts_0: 514350
+    priority_queue_len_0: 1219920
+    read_row_conflicts_core_1: 32403
+    row_hits_0: 252170
+    write_queue_len_avg_0: 11.7235041
+    read_row_misses_core_1: 1516
+    read_row_hits_0: 213230
+    read_row_hits_core_2: 137795
+    write_queue_len_0: 470900604
+    row_misses_0: 53932
+    read_row_conflicts_core_2: 103310
+    read_row_hits_core_3: 45613
+    read_row_conflicts_core_3: 35397
+    read_latency_0: 373317276
+    num_read_reqs_0: 658928
+    num_write_reqs_0: 606887
     num_other_reqs_0: 0
-    queue_len_0: 23278641
+    queue_len_0: 757445849
     Scheduler:
       impl: FRFCFS
     RefreshManager:
@@ -76,7 +80,7 @@ MemorySystem:
 
     RowPolicy:
       impl: ClosedRowPolicy
-      num_close_reqs: 17117
+      num_close_reqs: 34944
 
 
 

@@ -1,20 +1,24 @@
 Frontend:
   impl: SimpleO3
-  memory_access_cycles_recorded_core_3: 3165761
-  cycles_recorded_core_3: 11431003
-  num_expected_insts: 10000000
-  llc_eviction: 8007
-  llc_write_access: 101249
-  llc_write_misses: 406
-  cycles_recorded_core_2: 2658689
-  memory_access_cycles_recorded_core_2: 58218
-  llc_read_access: 523470
-  llc_read_misses: 83017
+  memory_access_cycles_recorded_core_3: 9018552
+  cycles_recorded_core_3: 26595731
+  llc_eviction: 595226
+  llc_write_access: 793286
+  llc_write_misses: 692
+  memory_access_cycles_recorded_core_2: 25308392
+  llc_read_access: 3148018
+  llc_read_misses: 725609
   llc_mshr_unavailable: 0
-  cycles_recorded_core_0: 3574635
-  memory_access_cycles_recorded_core_0: 330840
-  cycles_recorded_core_1: 3349314
-  memory_access_cycles_recorded_core_1: 297985
+  instructions_retired_core_3: 24877332
+  cycles_recorded_core_2: 70723844
+  instructions_retired_core_0: 126303051
+  cycles_recorded_core_0: 5582719
+  instructions_retired_core_2: 10000002
+  memory_access_cycles_recorded_core_0: 959339
+  num_expected_insts: 10000000
+  instructions_retired_core_1: 58097150
+  memory_access_cycles_recorded_core_1: 3596722
+  cycles_recorded_core_1: 12310748
   Translation:
     impl: RandomTranslation
 
@@ -22,9 +26,9 @@ Frontend:
 MemorySystem:
   impl: GenericDRAM
   total_num_other_requests: 0
-  total_num_write_requests: 286
-  total_num_read_requests: 83399
-  memory_system_cycles: 4286626
+  total_num_write_requests: 183152
+  total_num_read_requests: 726297
+  memory_system_cycles: 26521442
   DRAM:
     impl: ULTRARAM
   AddrMapper:
@@ -34,40 +38,40 @@ MemorySystem:
   Controller:
     impl: Generic
     id: Channel 0
-    avg_read_latency_0: 153.494812
-    priority_queue_len_avg_0: 0.197657317
-    read_queue_len_avg_0: 2.49417782
-    read_row_misses_core_0: 596
-    write_row_hits_0: 130
-    read_row_misses_core_2: 178
-    read_queue_len_0: 10691607
-    write_row_conflicts_0: 129
-    write_row_misses_0: 27
-    read_row_hits_core_1: 7145
-    read_row_hits_core_0: 1446
-    read_row_conflicts_core_0: 1915
-    queue_len_avg_0: 2.80639815
-    read_row_conflicts_0: 8995
-    read_row_misses_0: 17119
-    read_row_misses_core_3: 14895
-    row_conflicts_0: 9124
-    priority_queue_len_0: 847283
-    read_row_conflicts_core_1: 3373
-    row_hits_0: 57415
-    write_queue_len_avg_0: 0.114563063
-    read_row_misses_core_1: 1450
-    read_row_hits_0: 57285
-    read_row_hits_core_2: 83
-    write_queue_len_0: 491089
-    row_misses_0: 17146
-    read_row_conflicts_core_2: 983
-    read_row_hits_core_3: 48611
-    read_row_conflicts_core_3: 2724
-    read_latency_0: 12809142
-    num_read_reqs_0: 83450
-    num_write_reqs_0: 286
+    avg_read_latency_0: 440.569
+    priority_queue_len_avg_0: 0.197341949
+    read_queue_len_avg_0: 10.5176678
+    read_row_misses_core_0: 7450
+    write_row_hits_0: 32849
+    read_row_misses_core_2: 20903
+    read_queue_len_0: 278943707
+    write_row_conflicts_0: 131870
+    write_row_misses_0: 18408
+    read_row_hits_core_1: 16606
+    read_row_hits_core_0: 33029
+    read_row_conflicts_core_0: 33830
+    queue_len_avg_0: 24.0969791
+    read_row_conflicts_0: 331981
+    read_row_misses_0: 76260
+    read_row_misses_core_3: 40753
+    row_conflicts_0: 463851
+    priority_queue_len_0: 5233793
+    read_row_conflicts_core_1: 114622
+    row_hits_0: 350884
+    write_queue_len_avg_0: 13.3819695
+    read_row_misses_core_1: 7154
+    read_row_hits_0: 318035
+    read_row_hits_core_2: 103878
+    write_queue_len_0: 354909134
+    row_misses_0: 94668
+    read_row_conflicts_core_2: 128321
+    read_row_hits_core_3: 164522
+    read_row_conflicts_core_3: 55208
+    read_latency_0: 444957936
+    num_read_reqs_0: 1009962
+    num_write_reqs_0: 191597
     num_other_reqs_0: 0
-    queue_len_0: 12029979
+    queue_len_0: 639086634
     Scheduler:
       impl: FRFCFS
     RefreshManager:
@@ -76,7 +80,7 @@ MemorySystem:
 
     RowPolicy:
       impl: ClosedRowPolicy
-      num_close_reqs: 17106
+      num_close_reqs: 85408
 
 
 

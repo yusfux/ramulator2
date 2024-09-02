@@ -1,20 +1,24 @@
 Frontend:
   impl: SimpleO3
-  memory_access_cycles_recorded_core_3: 6095595
-  cycles_recorded_core_3: 19124170
-  num_expected_insts: 10000000
-  llc_eviction: 6290
-  llc_write_access: 124642
-  llc_write_misses: 411
-  cycles_recorded_core_2: 2812995
-  memory_access_cycles_recorded_core_2: 116096
-  llc_read_access: 612684
-  llc_read_misses: 87274
+  memory_access_cycles_recorded_core_3: 1208748
+  cycles_recorded_core_3: 6115606
+  llc_eviction: 390930
+  llc_write_access: 1182056
+  llc_write_misses: 831
+  memory_access_cycles_recorded_core_2: 37977036
+  llc_read_access: 3025583
+  llc_read_misses: 521179
   llc_mshr_unavailable: 0
-  cycles_recorded_core_0: 4449584
-  memory_access_cycles_recorded_core_0: 659216
-  cycles_recorded_core_1: 4127058
-  memory_access_cycles_recorded_core_1: 592966
+  instructions_retired_core_3: 179919451
+  cycles_recorded_core_2: 104639914
+  instructions_retired_core_0: 68301331
+  cycles_recorded_core_0: 16148909
+  instructions_retired_core_2: 10000001
+  memory_access_cycles_recorded_core_0: 5042476
+  num_expected_insts: 10000000
+  instructions_retired_core_1: 173045011
+  memory_access_cycles_recorded_core_1: 1314412
+  cycles_recorded_core_1: 6522199
   Translation:
     impl: RandomTranslation
 
@@ -22,9 +26,9 @@ Frontend:
 MemorySystem:
   impl: GenericDRAM
   total_num_other_requests: 0
-  total_num_write_requests: 517
-  total_num_read_requests: 87664
-  memory_system_cycles: 7171564
+  total_num_write_requests: 146917
+  total_num_read_requests: 521998
+  memory_system_cycles: 39239968
   DRAM:
     impl: ULTRARAM
   AddrMapper:
@@ -34,40 +38,40 @@ MemorySystem:
   Controller:
     impl: Generic
     id: Channel 0
-    avg_read_latency_0: 364.829407
-    priority_queue_len_avg_0: 0.225760236
-    read_queue_len_avg_0: 3.10165811
-    read_row_misses_core_0: 786
-    write_row_hits_0: 268
-    read_row_misses_core_2: 205
-    read_queue_len_0: 22243741
-    write_row_conflicts_0: 173
-    write_row_misses_0: 76
-    read_row_hits_core_1: 9896
-    read_row_hits_core_0: 2015
-    read_row_conflicts_core_0: 2192
-    queue_len_avg_0: 3.59974027
-    read_row_conflicts_0: 11351
-    read_row_misses_0: 17140
-    read_row_misses_core_3: 14286
-    row_conflicts_0: 11524
-    priority_queue_len_0: 1619054
-    read_row_conflicts_core_1: 4719
-    row_hits_0: 59436
-    write_queue_len_avg_0: 0.27232191
-    read_row_misses_core_1: 1863
-    read_row_hits_0: 59168
-    read_row_hits_core_2: 134
-    write_queue_len_0: 1952974
-    row_misses_0: 17216
-    read_row_conflicts_core_2: 1534
-    read_row_hits_core_3: 47123
-    read_row_conflicts_core_3: 2906
-    read_latency_0: 33084190
-    num_read_reqs_0: 90684
-    num_write_reqs_0: 517
+    avg_read_latency_0: 603.776184
+    priority_queue_len_avg_0: 0.0174332447
+    read_queue_len_avg_0: 4.42109966
+    read_row_misses_core_0: 6764
+    write_row_hits_0: 12901
+    read_row_misses_core_2: 20472
+    read_queue_len_0: 173483804
+    write_row_conflicts_0: 127403
+    write_row_misses_0: 6597
+    read_row_hits_core_1: 21857
+    read_row_hits_core_0: 17620
+    read_row_conflicts_core_0: 128336
+    queue_len_avg_0: 13.8039227
+    read_row_conflicts_0: 306819
+    read_row_misses_0: 40142
+    read_row_misses_core_3: 7716
+    row_conflicts_0: 434222
+    priority_queue_len_0: 684080
+    read_row_conflicts_core_1: 24955
+    row_hits_0: 187932
+    write_queue_len_avg_0: 9.36538887
+    read_row_misses_core_1: 5190
+    read_row_hits_0: 175031
+    read_row_hits_core_2: 95218
+    write_queue_len_0: 367497567
+    row_misses_0: 46739
+    read_row_conflicts_core_2: 128595
+    read_row_hits_core_3: 40336
+    read_row_conflicts_core_3: 24933
+    read_latency_0: 315169960
+    num_read_reqs_0: 521998
+    num_write_reqs_0: 146917
     num_other_reqs_0: 0
-    queue_len_0: 25815769
+    queue_len_0: 541665451
     Scheduler:
       impl: FRFCFS
     RefreshManager:
@@ -76,7 +80,7 @@ MemorySystem:
 
     RowPolicy:
       impl: ClosedRowPolicy
-      num_close_reqs: 17124
+      num_close_reqs: 30493
 
 
 
