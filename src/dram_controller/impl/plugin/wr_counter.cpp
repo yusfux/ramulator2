@@ -17,7 +17,7 @@ class WriteCounter : public IControllerPlugin, public Implementation {
   private:
     IDRAM* m_dram = nullptr;
 
-    std::unordered_map<int, int> m_write_counters;
+    std::unordered_map<Addr_t, int> m_write_counters;
     std::filesystem::path m_save_path; 
 
 
@@ -37,9 +37,10 @@ class WriteCounter : public IControllerPlugin, public Implementation {
     };
 
     void update(bool request_found, ReqBuffer::iterator& req_it) override {
-      if (request_found && m_dram->m_commands("WR") == req_it->command) {
+      if (request_found && req_it->type_id == Request::Type::Write) {
         // it is safe to assume that the values inside unoredered_map are initialized to 0 according to cpp standart [ref]
-        m_write_counters[req_it->addr]++;
+        int tx_offset = calc_log2(m_dram->m_internal_prefetch_size * m_dram->m_channel_width / 8);
+        m_write_counters[req_it->addr >> tx_offset]++;
       }
     };
 
