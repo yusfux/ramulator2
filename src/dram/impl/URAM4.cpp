@@ -3,53 +3,53 @@
 
 namespace Ramulator {
 
-class ULTRARAM : public IDRAM, public Implementation {
-  RAMULATOR_REGISTER_IMPLEMENTATION(IDRAM, ULTRARAM, "ULTRARAM", "ULTRARAM Device Model")
+class URAM4 : public IDRAM, public Implementation {
+  RAMULATOR_REGISTER_IMPLEMENTATION(IDRAM, URAM4, "URAM4", "DDR4 Based ULTRARAM Device Model")
 
   public:
     inline static const std::map<std::string, Organization> org_presets = {
       //   name             density   DQ   Ch Ra Bg Ba   Ro     Co
-      {"ULTRARAM_2Gb_x4",   {2<<10,   4,  {1, 1, 4, 4, 1<<15, 1<<10}}},
-      {"ULTRARAM_2Gb_x8",   {2<<10,   8,  {1, 1, 4, 4, 1<<14, 1<<10}}},
-      {"ULTRARAM_2Gb_x16",  {2<<10,   16, {1, 1, 2, 4, 1<<14, 1<<10}}},
-      {"ULTRARAM_4Gb_x4",   {4<<10,   4,  {1, 1, 4, 4, 1<<16, 1<<10}}},
-      {"ULTRARAM_4Gb_x8",   {4<<10,   8,  {1, 1, 4, 4, 1<<15, 1<<10}}},
-      {"ULTRARAM_4Gb_x16",  {4<<10,   16, {1, 1, 2, 4, 1<<15, 1<<10}}},
-      {"ULTRARAM_8Gb_x4",   {8<<10,   4,  {1, 1, 4, 4, 1<<17, 1<<10}}},
-      {"ULTRARAM_8Gb_x8",   {8<<10,   8,  {1, 1, 4, 4, 1<<16, 1<<10}}},
-      {"ULTRARAM_8Gb_x16",  {8<<10,   16, {1, 1, 2, 4, 1<<16, 1<<10}}},
-      {"ULTRARAM_16Gb_x4",  {16<<10,  4,  {1, 1, 4, 4, 1<<18, 1<<10}}},
-      {"ULTRARAM_16Gb_x8",  {16<<10,  8,  {1, 1, 4, 4, 1<<17, 1<<10}}},
-      {"ULTRARAM_16Gb_x16", {16<<10,  16, {1, 1, 2, 4, 1<<17, 1<<10}}},
+      {"URAM4_2Gb_x4",   {2<<10,   4,  {1, 1, 4, 4, 1<<15, 1<<10}}},
+      {"URAM4_2Gb_x8",   {2<<10,   8,  {1, 1, 4, 4, 1<<14, 1<<10}}},
+      {"URAM4_2Gb_x16",  {2<<10,   16, {1, 1, 2, 4, 1<<14, 1<<10}}},
+      {"URAM4_4Gb_x4",   {4<<10,   4,  {1, 1, 4, 4, 1<<16, 1<<10}}},
+      {"URAM4_4Gb_x8",   {4<<10,   8,  {1, 1, 4, 4, 1<<15, 1<<10}}},
+      {"URAM4_4Gb_x16",  {4<<10,   16, {1, 1, 2, 4, 1<<15, 1<<10}}},
+      {"URAM4_8Gb_x4",   {8<<10,   4,  {1, 1, 4, 4, 1<<17, 1<<10}}},
+      {"URAM4_8Gb_x8",   {8<<10,   8,  {1, 1, 4, 4, 1<<16, 1<<10}}},
+      {"URAM4_8Gb_x16",  {8<<10,   16, {1, 1, 2, 4, 1<<16, 1<<10}}},
+      {"URAM4_16Gb_x4",  {16<<10,  4,  {1, 1, 4, 4, 1<<18, 1<<10}}},
+      {"URAM4_16Gb_x8",  {16<<10,  8,  {1, 1, 4, 4, 1<<17, 1<<10}}},
+      {"URAM4_16Gb_x16", {16<<10,  16, {1, 1, 2, 4, 1<<17, 1<<10}}},
     };
 
 
     inline static const std::map<std::string, std::vector<int>> timing_presets = {
       //   name       rate   nBL  nCL  nRCD  nRP   nRAS  nRC   nWR  nRTP nCWL nCCDS nCCDL nRRDS nRRDL nWTRS nWTRL nFAW  nRFC nREFI nCS,  tCK_ps
-      {"ULTRARAM_1600J",  {1600,   4,  10,  10,   10,   28,   38,   12,   6,   9,    4,    5,   -1,   -1,    2,    6,   -1,  -1,  -1,   2,    1250}},
-      {"ULTRARAM_1600K",  {1600,   4,  11,  11,   11,   28,   39,   12,   6,   9,    4,    5,   -1,   -1,    2,    6,   -1,  -1,  -1,   2,    1250}},
-      {"ULTRARAM_1600L",  {1600,   4,  12,  12,   12,   28,   40,   12,   6,   9,    4,    5,   -1,   -1,    2,    6,   -1,  -1,  -1,   2,    1250}},
-      {"ULTRARAM_1866L",  {1866,   4,  12,  12,   12,   32,   44,   14,   7,   10,   4,    5,   -1,   -1,    3,    7,   -1,  -1,  -1,   2,    1071}},
-      {"ULTRARAM_1866M",  {1866,   4,  13,  13,   13,   32,   45,   14,   7,   10,   4,    5,   -1,   -1,    3,    7,   -1,  -1,  -1,   2,    1071}},
-      {"ULTRARAM_1866N",  {1866,   4,  14,  14,   14,   32,   46,   14,   7,   10,   4,    5,   -1,   -1,    3,    7,   -1,  -1,  -1,   2,    1071}},
-      {"ULTRARAM_2133N",  {2133,   4,  14,  14,   14,   36,   50,   16,   8,   11,   4,    6,   -1,   -1,    3,    8,   -1,  -1,  -1,   2,    937} },
-      {"ULTRARAM_2133P",  {2133,   4,  15,  15,   15,   36,   51,   16,   8,   11,   4,    6,   -1,   -1,    3,    8,   -1,  -1,  -1,   2,    937} },
-      {"ULTRARAM_2133R",  {2133,   4,  16,  16,   16,   36,   52,   16,   8,   11,   4,    6,   -1,   -1,    3,    8,   -1,  -1,  -1,   2,    937} },
-      {"ULTRARAM_2400P",  {2400,   4,  15,  15,   15,   39,   54,   18,   9,   12,   4,    6,   -1,   -1,    3,    9,   -1,  -1,  -1,   2,    833} },
-      {"ULTRARAM_2400R",  {2400,   4,  16,  16,   16,   39,   55,   18,   9,   12,   4,    6,   -1,   -1,    3,    9,   -1,  -1,  -1,   2,    833} },
-      {"ULTRARAM_2400U",  {2400,   4,  17,  17,   17,   39,   56,   18,   9,   12,   4,    6,   -1,   -1,    3,    9,   -1,  -1,  -1,   2,    833} },
-      {"ULTRARAM_2400T",  {2400,   4,  18,  18,   18,   39,   57,   18,   9,   12,   4,    6,   -1,   -1,    3,    9,   -1,  -1,  -1,   2,    833} },
-      {"ULTRARAM_2666T",  {2666,   4,  17,  17,   17,   43,   60,   20,   10,  14,   4,    7,   -1,   -1,    4,    10,  -1,  -1,  -1,   2,    750} },
-      {"ULTRARAM_2666U",  {2666,   4,  18,  18,   18,   43,   61,   20,   10,  14,   4,    7,   -1,   -1,    4,    10,  -1,  -1,  -1,   2,    750} },
-      {"ULTRARAM_2666V",  {2666,   4,  19,  19,   19,   43,   62,   20,   10,  14,   4,    7,   -1,   -1,    4,    10,  -1,  -1,  -1,   2,    750} },
-      {"ULTRARAM_2666W",  {2666,   4,  20,  20,   20,   43,   63,   20,   10,  14,   4,    7,   -1,   -1,    4,    10,  -1,  -1,  -1,   2,    750} },
-      {"ULTRARAM_2933V",  {2933,   4,  19,  19,   19,   47,   66,   22,   11,  16,   4,    8,   -1,   -1,    4,    11,  -1,  -1,  -1,   2,    682} },
-      {"ULTRARAM_2933W",  {2933,   4,  20,  20,   20,   47,   67,   22,   11,  16,   4,    8,   -1,   -1,    4,    11,  -1,  -1,  -1,   2,    682} },
-      {"ULTRARAM_2933Y",  {2933,   4,  21,  21,   21,   47,   68,   22,   11,  16,   4,    8,   -1,   -1,    4,    11,  -1,  -1,  -1,   2,    682} },
-      {"ULTRARAM_2933AA", {2933,   4,  22,  22,   22,   47,   69,   22,   11,  16,   4,    8,   -1,   -1,    4,    11,  -1,  -1,  -1,   2,    682} },
-      {"ULTRARAM_3200W",  {3200,   4,  20,  20,   20,   52,   72,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
-      {"ULTRARAM_3200AA", {3200,   4,  22,  22,   22,   52,   74,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
-      {"ULTRARAM_3200AC", {3200,   4,  24,  24,   24,   52,   76,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
+      {"URAM4_1600J",  {1600,   4,  10,  10,   10,   28,   38,   12,   6,   9,    4,    5,   -1,   -1,    2,    6,   -1,  -1,  -1,   2,    1250}},
+      {"URAM4_1600K",  {1600,   4,  11,  11,   11,   28,   39,   12,   6,   9,    4,    5,   -1,   -1,    2,    6,   -1,  -1,  -1,   2,    1250}},
+      {"URAM4_1600L",  {1600,   4,  12,  12,   12,   28,   40,   12,   6,   9,    4,    5,   -1,   -1,    2,    6,   -1,  -1,  -1,   2,    1250}},
+      {"URAM4_1866L",  {1866,   4,  12,  12,   12,   32,   44,   14,   7,   10,   4,    5,   -1,   -1,    3,    7,   -1,  -1,  -1,   2,    1071}},
+      {"URAM4_1866M",  {1866,   4,  13,  13,   13,   32,   45,   14,   7,   10,   4,    5,   -1,   -1,    3,    7,   -1,  -1,  -1,   2,    1071}},
+      {"URAM4_1866N",  {1866,   4,  14,  14,   14,   32,   46,   14,   7,   10,   4,    5,   -1,   -1,    3,    7,   -1,  -1,  -1,   2,    1071}},
+      {"URAM4_2133N",  {2133,   4,  14,  14,   14,   36,   50,   16,   8,   11,   4,    6,   -1,   -1,    3,    8,   -1,  -1,  -1,   2,    937} },
+      {"URAM4_2133P",  {2133,   4,  15,  15,   15,   36,   51,   16,   8,   11,   4,    6,   -1,   -1,    3,    8,   -1,  -1,  -1,   2,    937} },
+      {"URAM4_2133R",  {2133,   4,  16,  16,   16,   36,   52,   16,   8,   11,   4,    6,   -1,   -1,    3,    8,   -1,  -1,  -1,   2,    937} },
+      {"URAM4_2400P",  {2400,   4,  15,  15,   15,   39,   54,   18,   9,   12,   4,    6,   -1,   -1,    3,    9,   -1,  -1,  -1,   2,    833} },
+      {"URAM4_2400R",  {2400,   4,  16,  16,   16,   39,   55,   18,   9,   12,   4,    6,   -1,   -1,    3,    9,   -1,  -1,  -1,   2,    833} },
+      {"URAM4_2400U",  {2400,   4,  17,  17,   17,   39,   56,   18,   9,   12,   4,    6,   -1,   -1,    3,    9,   -1,  -1,  -1,   2,    833} },
+      {"URAM4_2400T",  {2400,   4,  18,  18,   18,   39,   57,   18,   9,   12,   4,    6,   -1,   -1,    3,    9,   -1,  -1,  -1,   2,    833} },
+      {"URAM4_2666T",  {2666,   4,  17,  17,   17,   43,   60,   20,   10,  14,   4,    7,   -1,   -1,    4,    10,  -1,  -1,  -1,   2,    750} },
+      {"URAM4_2666U",  {2666,   4,  18,  18,   18,   43,   61,   20,   10,  14,   4,    7,   -1,   -1,    4,    10,  -1,  -1,  -1,   2,    750} },
+      {"URAM4_2666V",  {2666,   4,  19,  19,   19,   43,   62,   20,   10,  14,   4,    7,   -1,   -1,    4,    10,  -1,  -1,  -1,   2,    750} },
+      {"URAM4_2666W",  {2666,   4,  20,  20,   20,   43,   63,   20,   10,  14,   4,    7,   -1,   -1,    4,    10,  -1,  -1,  -1,   2,    750} },
+      {"URAM4_2933V",  {2933,   4,  19,  19,   19,   47,   66,   22,   11,  16,   4,    8,   -1,   -1,    4,    11,  -1,  -1,  -1,   2,    682} },
+      {"URAM4_2933W",  {2933,   4,  20,  20,   20,   47,   67,   22,   11,  16,   4,    8,   -1,   -1,    4,    11,  -1,  -1,  -1,   2,    682} },
+      {"URAM4_2933Y",  {2933,   4,  21,  21,   21,   47,   68,   22,   11,  16,   4,    8,   -1,   -1,    4,    11,  -1,  -1,  -1,   2,    682} },
+      {"URAM4_2933AA", {2933,   4,  22,  22,   22,   47,   69,   22,   11,  16,   4,    8,   -1,   -1,    4,    11,  -1,  -1,  -1,   2,    682} },
+      {"URAM4_3200W",  {3200,   4,  20,  20,   20,   52,   72,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
+      {"URAM4_3200AA", {3200,   4,  22,  22,   22,   52,   74,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
+      {"URAM4_3200AC", {3200,   4,  24,  24,   24,   52,   76,   24,   12,  16,   4,    8,   -1,   -1,    4,    12,  -1,  -1,  -1,   2,    625} },
     };
 
     inline static const std::map<std::string, std::vector<double>> voltage_presets = {
@@ -169,8 +169,8 @@ class ULTRARAM : public IDRAM, public Implementation {
     );
 
   public:
-    struct Node : public DRAMNodeBase<ULTRARAM> {
-      Node(ULTRARAM* dram, Node* parent, int level, int id) : DRAMNodeBase<ULTRARAM>(dram, parent, level, id) {};
+    struct Node : public DRAMNodeBase<URAM4> {
+      Node(URAM4* dram, Node* parent, int level, int id) : DRAMNodeBase<URAM4>(dram, parent, level, id) {};
     };
     std::vector<Node*> m_channels;
     
@@ -425,7 +425,7 @@ class ULTRARAM : public IDRAM, public Implementation {
       //   }
       // }
 
-      // Overwrite timing parameters with ULTRARAM constants
+      // Overwrite timing parameters with URAM4 constants
       auto ultraram_params = {"nRCD", "nRAS", "nRP", "nRC"};
       if(auto provided_timing = param_group("timing").param<int>("nRCD").optional()) {
         auto ultraram_const = (float)(*provided_timing) / m_timing_vals("nRCD");
@@ -512,43 +512,43 @@ class ULTRARAM : public IDRAM, public Implementation {
       m_actions.resize(m_levels.size(), std::vector<ActionFunc_t<Node>>(m_commands.size()));
 
       // Rank Actions
-      m_actions[m_levels["rank"]][m_commands["PREA"]] = Lambdas::Action::Rank::PREab<ULTRARAM>;
-      m_actions[m_levels["rank"]][m_commands["REFab"]] = Lambdas::Action::Rank::REFab<ULTRARAM>;
-      m_actions[m_levels["rank"]][m_commands["REFab_end"]] = Lambdas::Action::Rank::REFab_end<ULTRARAM>;
+      m_actions[m_levels["rank"]][m_commands["PREA"]] = Lambdas::Action::Rank::PREab<URAM4>;
+      m_actions[m_levels["rank"]][m_commands["REFab"]] = Lambdas::Action::Rank::REFab<URAM4>;
+      m_actions[m_levels["rank"]][m_commands["REFab_end"]] = Lambdas::Action::Rank::REFab_end<URAM4>;
 
       // Bank actions
-      m_actions[m_levels["bank"]][m_commands["ACT"]] = Lambdas::Action::Bank::ACT<ULTRARAM>;
-      m_actions[m_levels["bank"]][m_commands["PRE"]] = Lambdas::Action::Bank::PRE<ULTRARAM>;
-      m_actions[m_levels["bank"]][m_commands["RDA"]] = Lambdas::Action::Bank::PRE<ULTRARAM>;
-      m_actions[m_levels["bank"]][m_commands["WRA"]] = Lambdas::Action::Bank::PRE<ULTRARAM>;
+      m_actions[m_levels["bank"]][m_commands["ACT"]] = Lambdas::Action::Bank::ACT<URAM4>;
+      m_actions[m_levels["bank"]][m_commands["PRE"]] = Lambdas::Action::Bank::PRE<URAM4>;
+      m_actions[m_levels["bank"]][m_commands["RDA"]] = Lambdas::Action::Bank::PRE<URAM4>;
+      m_actions[m_levels["bank"]][m_commands["WRA"]] = Lambdas::Action::Bank::PRE<URAM4>;
     };
 
     void set_preqs() {
       m_preqs.resize(m_levels.size(), std::vector<PreqFunc_t<Node>>(m_commands.size()));
 
       // Rank Actions
-      m_preqs[m_levels["rank"]][m_commands["REFab"]] = Lambdas::Preq::Rank::RequireAllBanksClosed<ULTRARAM>;
+      m_preqs[m_levels["rank"]][m_commands["REFab"]] = Lambdas::Preq::Rank::RequireAllBanksClosed<URAM4>;
 
       // Bank actions
-      m_preqs[m_levels["bank"]][m_commands["RD"]] = Lambdas::Preq::Bank::RequireRowOpen<ULTRARAM>;
-      m_preqs[m_levels["bank"]][m_commands["WR"]] = Lambdas::Preq::Bank::RequireRowOpen<ULTRARAM>;
-      m_preqs[m_levels["bank"]][m_commands["ACT"]] = Lambdas::Preq::Bank::RequireRowOpen<ULTRARAM>;
-      m_preqs[m_levels["bank"]][m_commands["PRE"]] = Lambdas::Preq::Bank::RequireBankClosed<ULTRARAM>;
+      m_preqs[m_levels["bank"]][m_commands["RD"]] = Lambdas::Preq::Bank::RequireRowOpen<URAM4>;
+      m_preqs[m_levels["bank"]][m_commands["WR"]] = Lambdas::Preq::Bank::RequireRowOpen<URAM4>;
+      m_preqs[m_levels["bank"]][m_commands["ACT"]] = Lambdas::Preq::Bank::RequireRowOpen<URAM4>;
+      m_preqs[m_levels["bank"]][m_commands["PRE"]] = Lambdas::Preq::Bank::RequireBankClosed<URAM4>;
     };
 
     void set_rowhits() {
       m_rowhits.resize(m_levels.size(), std::vector<RowhitFunc_t<Node>>(m_commands.size()));
 
-      m_rowhits[m_levels["bank"]][m_commands["RD"]] = Lambdas::RowHit::Bank::RDWR<ULTRARAM>;
-      m_rowhits[m_levels["bank"]][m_commands["WR"]] = Lambdas::RowHit::Bank::RDWR<ULTRARAM>;
+      m_rowhits[m_levels["bank"]][m_commands["RD"]] = Lambdas::RowHit::Bank::RDWR<URAM4>;
+      m_rowhits[m_levels["bank"]][m_commands["WR"]] = Lambdas::RowHit::Bank::RDWR<URAM4>;
     }
 
 
     void set_rowopens() {
       m_rowopens.resize(m_levels.size(), std::vector<RowhitFunc_t<Node>>(m_commands.size()));
 
-      m_rowopens[m_levels["bank"]][m_commands["RD"]] = Lambdas::RowOpen::Bank::RDWR<ULTRARAM>;
-      m_rowopens[m_levels["bank"]][m_commands["WR"]] = Lambdas::RowOpen::Bank::RDWR<ULTRARAM>;
+      m_rowopens[m_levels["bank"]][m_commands["RD"]] = Lambdas::RowOpen::Bank::RDWR<URAM4>;
+      m_rowopens[m_levels["bank"]][m_commands["WR"]] = Lambdas::RowOpen::Bank::RDWR<URAM4>;
     }
 
     void set_powers() {
@@ -593,16 +593,16 @@ class ULTRARAM : public IDRAM, public Implementation {
 
       m_powers.resize(m_levels.size(), std::vector<PowerFunc_t<Node>>(m_commands.size()));
 
-      m_powers[m_levels["bank"]][m_commands["ACT"]] = Lambdas::Power::Bank::ACT<ULTRARAM>;
-      m_powers[m_levels["bank"]][m_commands["PRE"]] = Lambdas::Power::Bank::PRE<ULTRARAM>;
-      m_powers[m_levels["bank"]][m_commands["RD"]]  = Lambdas::Power::Bank::RD<ULTRARAM>;
-      m_powers[m_levels["bank"]][m_commands["WR"]]  = Lambdas::Power::Bank::WR<ULTRARAM>;
+      m_powers[m_levels["bank"]][m_commands["ACT"]] = Lambdas::Power::Bank::ACT<URAM4>;
+      m_powers[m_levels["bank"]][m_commands["PRE"]] = Lambdas::Power::Bank::PRE<URAM4>;
+      m_powers[m_levels["bank"]][m_commands["RD"]]  = Lambdas::Power::Bank::RD<URAM4>;
+      m_powers[m_levels["bank"]][m_commands["WR"]]  = Lambdas::Power::Bank::WR<URAM4>;
 
-      m_powers[m_levels["rank"]][m_commands["ACT"]] = Lambdas::Power::Rank::ACT<ULTRARAM>;
-      m_powers[m_levels["rank"]][m_commands["PRE"]] = Lambdas::Power::Rank::PRE<ULTRARAM>;
-      m_powers[m_levels["rank"]][m_commands["PREA"]] = Lambdas::Power::Rank::PREA<ULTRARAM>;
-      m_powers[m_levels["rank"]][m_commands["REFab"]] = Lambdas::Power::Rank::REFab<ULTRARAM>;
-      m_powers[m_levels["rank"]][m_commands["REFab_end"]] = Lambdas::Power::Rank::REFab_end<ULTRARAM>;
+      m_powers[m_levels["rank"]][m_commands["ACT"]] = Lambdas::Power::Rank::ACT<URAM4>;
+      m_powers[m_levels["rank"]][m_commands["PRE"]] = Lambdas::Power::Rank::PRE<URAM4>;
+      m_powers[m_levels["rank"]][m_commands["PREA"]] = Lambdas::Power::Rank::PREA<URAM4>;
+      m_powers[m_levels["rank"]][m_commands["REFab"]] = Lambdas::Power::Rank::REFab<URAM4>;
+      m_powers[m_levels["rank"]][m_commands["REFab_end"]] = Lambdas::Power::Rank::REFab_end<URAM4>;
 
       // register stats
       register_stat(s_total_background_energy).name("total_background_energy");
@@ -643,7 +643,7 @@ class ULTRARAM : public IDRAM, public Implementation {
 
     void process_rank_energy(PowerStats& rank_stats, Node* rank_node) {
       
-      Lambdas::Power::Rank::finalize_rank<ULTRARAM>(rank_node, 0, AddrVec_t(), m_clk);
+      Lambdas::Power::Rank::finalize_rank<URAM4>(rank_node, 0, AddrVec_t(), m_clk);
 
       auto TS = [&](std::string_view timing) { return m_timing_vals(timing); };
       auto VE = [&](std::string_view voltage) { return m_voltage_vals(voltage); };

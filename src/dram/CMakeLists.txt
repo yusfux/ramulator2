@@ -8,7 +8,6 @@ target_sources(
 
   impl/DDR3.cpp
   impl/DDR4.cpp
-  impl/ULTRARAM.cpp
   impl/DDR4-VRR.cpp
   impl/DDR4-RVRR.cpp
   impl/DDR5.cpp
@@ -18,6 +17,8 @@ target_sources(
   impl/HBM.cpp
   impl/HBM2.cpp
   impl/HBM3.cpp
+  impl/URAM4.cpp
+  impl/URAM5.cpp
 )
 
 target_link_libraries(
