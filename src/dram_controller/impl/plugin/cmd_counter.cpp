@@ -25,7 +25,15 @@ class CommandCounter : public IControllerPlugin, public Implementation {
 
   public:
     void init() override { 
-      m_commands_to_count = param<std::vector<std::string>>("commands_to_count").desc("A list of commands to be counted").required();
+      auto commands_param = param<std::vector<std::string>>("commands_to_count")
+          .desc("A list of commands to be counted. If not specified, all commands will be counted.")
+          .optional();
+
+      if (commands_param.has_value()) {
+        m_commands_to_count = commands_param.value();
+      } else {
+          m_commands_to_count.clear();
+      }
 
       m_save_path = param<std::string>("path").desc("Path to the trace file").required();
       auto parent_path = m_save_path.parent_path();
@@ -39,16 +47,22 @@ class CommandCounter : public IControllerPlugin, public Implementation {
       m_ctrl = cast_parent<IDRAMController>();
       m_dram = m_ctrl->m_dram;
 
-      for (const auto& command_name : m_commands_to_count) {
-        if (!m_dram->m_commands.contains(command_name)) {
-          throw ConfigurationError("Command {} does not exist in the DRAM standard {}!", command_name, m_dram->get_name());
+      if(!m_commands_to_count.empty()) {
+        for (const auto& command_name : m_commands_to_count) {
+          if (!m_dram->m_commands.contains(command_name)) {
+            throw ConfigurationError("Command {} does not exist in the DRAM standard {}!", command_name, m_dram->get_name());
+          }
+          m_command_counters[m_dram->m_commands(command_name)] = 0;
         }
-        m_command_counters[m_dram->m_commands(command_name)] = 0;
+      } else {
+        for (int i = 0; i < m_dram->m_commands.size(); i++) {
+          m_command_counters[i] = 0;  //TODO: i am not sure if every command is consecutive in order
+        }
       }
     };
 
     void update(bool request_found, ReqBuffer::iterator& req_it) override {
-      if (request_found) {
+      if (request_found && m_command_counters.count(req_it->command) > 0) {
         m_command_counters[req_it->command]++;
       }
     };
