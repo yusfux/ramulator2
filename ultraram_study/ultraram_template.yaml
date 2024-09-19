@@ -15,13 +15,15 @@ MemorySystem:
   clock_ratio: 3
 
   DRAM:
-    impl: ULTRARAM
+    impl: URAM4
     org:
-      preset: ULTRARAM_8Gb_x8
+      preset: URAM4_8Gb_x8
       channel: 1
       rank: 2
     timing:
-      preset: ULTRARAM_2400R 
+      preset: URAM4_2400R 
+    RFM:
+      BRC: 2
 
   Controller:
     impl: Generic
@@ -33,6 +35,9 @@ MemorySystem:
       impl: ClosedRowPolicy
       cap: 4
     plugins:
+      - ControllerPlugin:
+          impl: CommandCounter
+          path: ./cmdcnt.txt
 
   AddrMapper:
     impl: RoBaRaCoCh

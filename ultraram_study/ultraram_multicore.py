@@ -7,13 +7,13 @@ import yaml
 import shlex
 import tqdm
 
-device_list     = ['DDR4', 'URAM4']
-org_list        = ['2Gb_x8', '4Gb_x8', '8Gb_x8', '16Gb_x8']
-timing_list     = ['1600L', '1866N', '2400T', '2933AA', '3200AC']
-row_policy_list = ['ClosedRowPolicy', 'OpenRowPolicy']
+device_list     = ['DDR4', 'DDR5', 'URAM4', 'URAM5']
+org_list        = ['16Gb_x8']
+timing_list     = {'DDR4': '3200AA', 'DDR5': '3200AN', 'URAM4': '3200AA', 'URAM5': '3200AN',}
+row_policy_list = ['OpenRowPolicy']
 
-refresh_manager = {'URAM4': 'NoRefresh', 'DDR4': 'AllBank'}
-ultraram_trcd   = {'URAM4': '100', 'FURAM4': '10'}
+refresh_manager = {'DDR4': 'AllBank', 'DDR5': 'AllBank', 'URAM4': 'NoRefresh', 'URAM5': 'NoRefresh',}
+ultraram_trcd   = {'URAM4': '100', 'FURAM4': '10', 'URAM5': '100', 'FURAM5': '10'}
 
 def main(base_config, trace_path, trace_comb_file, output_path, thread_count):
   tasks = get_config(base_config, trace_path, trace_comb_file, output_path)
@@ -49,28 +49,30 @@ def get_config(base_config, trace_path, trace_comb_file, output_path):
   tasks = []
   for device in device_list:
     for org in org_list:
-      for timing in timing_list:
-        for row_policy in row_policy_list:
-          for trace in trace_list:
-            out_file_name = f'{output_path}/{device}_{org}_{timing}_{row_policy}_{trace}'
+      for row_policy in row_policy_list:
+        for trace in trace_list:
+          out_file_name = f'{output_path}/{device}_{org}_{timing_list[device]}_{row_policy}_{trace}'
 
-            config = copy.deepcopy(config_template)
-            config['Frontend']['traces'] = [f'{trace_path}/{trace}' for trace in trace_combs[trace]]
-            config['MemorySystem']['DRAM']['impl'] = device
-            config['MemorySystem']['DRAM']['org']['preset'] = f'{device}_{org}'
-            config['MemorySystem']['DRAM']['timing']['preset'] = f'{device}_{timing}'
-            config['MemorySystem']['Controller']['RefreshManager']['impl'] = refresh_manager[device]
-            config['MemorySystem']['Controller']['RowPolicy']['impl'] = row_policy
+          config = copy.deepcopy(config_template)
+          config['Frontend']['traces'] = [f'{trace_path}/{trace}' for trace in trace_combs[trace]]
+          config['MemorySystem']['DRAM']['impl'] = device
+          config['MemorySystem']['DRAM']['org']['preset'] = f'{device}_{org}'
+          config['MemorySystem']['DRAM']['timing']['preset'] = f'{device}_{timing_list[device]}'
+          config['MemorySystem']['Controller']['RefreshManager']['impl'] = refresh_manager[device]
+          config['MemorySystem']['Controller']['RowPolicy']['impl'] = row_policy
 
-            if device == 'URAM4':
-              config['MemorySystem']['DRAM']['timing']['tRCD'] = ultraram_trcd['URAM4']
+          if device == 'DDR5':
+            config['MemorySystem']['Controller']['plugins'].append({'ControllerPlugin' : {'impl': 'RFMManager'}})
 
-              fultraram_config = copy.deepcopy(config)
-              fultraram_file_name = f'{output_path}/FULTRARAM_{org}_{timing}_{row_policy}_{trace}'
-              fultraram_config['MemorySystem']['DRAM']['timing']['tRCD'] = ultraram_trcd['FURAM4']
-              tasks.append((fultraram_config, fultraram_file_name))
+          if device.startswith('URAM'):
+            config['MemorySystem']['DRAM']['timing']['tRCD'] = ultraram_trcd[device]
 
-            tasks.append((config, out_file_name))
+            fultraram_config = copy.deepcopy(config)
+            fultraram_file_name = f'{output_path}/F{device}_{org}_{timing_list[device]}_{row_policy}_{trace}'
+            fultraram_config['MemorySystem']['DRAM']['timing']['tRCD'] = ultraram_trcd[f'F{device}']
+            tasks.append((fultraram_config, fultraram_file_name))
+
+          tasks.append((config, out_file_name))
 
   return tasks
 

@@ -6,3 +6,4 @@ ramulator2
 autobuild.sh
 build.sh
 ultraram_study/traces
+ultraram_study/runs*
