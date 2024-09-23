@@ -37,7 +37,7 @@ MemorySystem:
     plugins:
       - ControllerPlugin:
           impl: CommandCounter
-          path: ./cmdcnt.txt
+          path: ./should_be_replaced.txt
 
   AddrMapper:
     impl: RoBaRaCoCh
