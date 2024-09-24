@@ -73,8 +73,8 @@ def get_singlecore_run_commands():
 
   for device in device_list:
     for org in org_list:
-      for timing in timing_list[device]:
-        for row_policy in row_policy_list:
+      for row_policy in row_policy_list:
+        for timing in timing_list[device]:
           for trace in singlecore_traces:
             sbatch_filename    = f'{WORK_DIR}/run_scripts/{device}_{org}_{timing}_{row_policy}_{trace}.sh'
             config_filename    = f'{RESULT_DIR}/configs/{device}_{org}_{timing}_{row_policy}_{trace}.yaml'
@@ -98,10 +98,16 @@ def get_singlecore_run_commands():
                 }
               })
             
+            #TODO: need to find a better way for below lines, it looks terrible
             if device == 'DDR5':
               config['MemorySystem']['Controller']['plugins'].append({'ControllerPlugin' : {'impl': 'RFMManager'}})
-            if device.startswith('URAM') or device.startswith('FURAM'):
-              config['MemorySystem']['DRAM']['timing']['tRCD'] = ultraram_trcd[device] 
+            if device.startswith('FURAM') or device.startswith('URAM'):
+              config['MemorySystem']['DRAM']['timing']['tRCD'] = trcd_list[device]
+            if device.startswith('FURAM'):
+              furam = device.replace('FURAM', 'URAM')
+              config['MemorySystem']['DRAM']['impl'] = furam
+              config['MemorySystem']['DRAM']['org']['preset'] = f'{furam}_{org}'
+              config['MemorySystem']['DRAM']['timing']['preset'] = f'{furam}_{timing}'
 
             with open(config_filename, 'w') as f:
               yaml.dump(config, f)
@@ -111,7 +117,7 @@ def get_singlecore_run_commands():
               f.write(f'{CMD} -f {config_filename}' + '\n')
 
             sbatch_cmd = f'{SBATCH_CMD} --chdir={WORK_DIR} --output={result_filename}'
-            sbatch_cmd += f' --error={error_filename} --partition={PARTITION_NAME} --job-name"ramulator2" {sbatch_filename}'
+            sbatch_cmd += f' --error={error_filename} --partition={PARTITION_NAME} --job-name="ramulator2" {sbatch_filename}'
 
             run_commands.append(sbatch_cmd)
   
@@ -123,8 +129,8 @@ def get_multicore_run_commands():
 
   for device in device_list:
     for org in org_list:
-      for timing in timing_list[device]:
-        for row_policy in row_policy_list:
+      for row_policy in row_policy_list:
+        for timing in timing_list[device]:
           for trace in multicore_traces:
             sbatch_filename    = f'{WORK_DIR}/run_scripts/{device}_{org}_{timing}_{row_policy}_{trace}.sh'
             config_filename    = f'{RESULT_DIR}/configs/{device}_{org}_{timing}_{row_policy}_{trace}.yaml'
@@ -134,7 +140,7 @@ def get_multicore_run_commands():
             wr_count_filename  = f'{RESULT_DIR}/wr_counts/{device}_{org}_{timing}_{row_policy}_{trace}.txt'
 
             config = copy.deepcopy(base_config)
-            config["Frontend"]["traces"] = trace_combs[trace]
+            config["Frontend"]["traces"] = [f'{TRACE_DIR}/{trace_group}' for trace_group in trace_combs[trace]]
             config['MemorySystem']['DRAM']['impl'] = device
             config['MemorySystem']['DRAM']['org']['preset'] = f'{device}_{org}'
             config['MemorySystem']['DRAM']['timing']['preset'] = f'{device}_{timing}'
@@ -148,11 +154,16 @@ def get_multicore_run_commands():
                 }
               })
             
+            #TODO: need to find a better way for below lines, it looks terrible
             if device == 'DDR5':
               config['MemorySystem']['Controller']['plugins'].append({'ControllerPlugin' : {'impl': 'RFMManager'}})
-            if device.startswith('URAM') or device.startswith('FURAM'):
-              config['MemorySystem']['DRAM']['timing']['tRCD'] = ultraram_trcd[device]
-            
+            if device.startswith('FURAM') or device.startswith('URAM'):
+              config['MemorySystem']['DRAM']['timing']['tRCD'] = trcd_list[device]
+            if device.startswith('FURAM'):
+              furam = device.replace('FURAM', 'URAM')
+              config['MemorySystem']['DRAM']['impl'] = furam
+              config['MemorySystem']['DRAM']['org']['preset'] = f'{furam}_{org}'
+              config['MemorySystem']['DRAM']['timing']['preset'] = f'{furam}_{timing}'
 
             with open(config_filename, 'w') as f:
               yaml.dump(config, f)
@@ -162,7 +173,7 @@ def get_multicore_run_commands():
               f.write(f'{CMD} -f {config_filename}' + '\n')
 
             sbatch_cmd = f'{SBATCH_CMD} --chdir={WORK_DIR} --output={result_filename}'
-            sbatch_cmd += f' --error={error_filename} --partition={PARTITION_NAME} --job-name"ramulator2" {sbatch_filename}'
+            sbatch_cmd += f' --error={error_filename} --partition={PARTITION_NAME} --job-name="ramulator2" {sbatch_filename}'
 
             run_commands.append(sbatch_cmd)
   return run_commands

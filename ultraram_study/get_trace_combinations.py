@@ -2,8 +2,9 @@
 
 import random
 
+trace_path      = 'traces/'
 output_filename = 'traces/multicore_traces.txt'
-mpki_path = 'traces/mpki.csv'
+mpki_path       = 'traces/mpki.csv'
 
 trace_bases = [("H", 25), ("M", 5), ("L", 0)]
 
@@ -23,12 +24,12 @@ with open(mpki_path, 'r') as f:
         break
 
 mix_groups = [
-  ("HHHH", 10),
-  ("MMMM", 10),
-  ("LLLL", 10),
-  ("HHMM", 10),
-  ("MMLL", 10),
-  ("LLHH", 10)
+  ("HHHH", 5),
+  ("MMMM", 5),
+  ("LLLL", 5),
+  ("HHMM", 5),
+  ("MMLL", 5),
+  ("LLHH", 5)
 ]
 
 
