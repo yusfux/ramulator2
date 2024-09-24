@@ -12,6 +12,7 @@ argparser = argparse.ArgumentParser(
 argparser.add_argument("-wd", "--working_directory")
 argparser.add_argument("-bc", "--base_config")
 argparser.add_argument("-tc", "--trace_combination")
+argparser.add_argument("-tm", "--trace_mpki")
 argparser.add_argument("-td", "--trace_directory")
 argparser.add_argument("-rd", "--result_directory")
 argparser.add_argument("-pn", "--partition_name")
@@ -21,6 +22,7 @@ args = argparser.parse_args()
 WORK_DIR         = args.working_directory
 BASE_CONFIG_FILE = args.base_config
 TRACE_COMB_FILE  = args.trace_combination
+TRACE_MPKI_FILE  = args.trace_mpki
 TRACE_DIR        = args.trace_directory
 RESULT_DIR       = args.result_directory
 PARTITION_NAME   = args.partition_name
@@ -53,23 +55,29 @@ with open(TRACE_COMB_FILE, 'r') as f:
     trace_combs[trace_name] = traces
     trace_types[trace_name] = trace_type
 
-def get_trace_list(trace_comb_file):
+def get_multicore_traces(trace_comb_file):
   multicore_trace_list = set()
-  singlecore_trace_list = set()
   with open(trace_comb_file, "r") as f:
       for line in f:
           line = line.strip()
           tokens = line.split(',')
           trace_name = tokens[0]
-          trace_list = tokens[2:]
-          for trace in trace_list:
-              singlecore_trace_list.add(trace)
           multicore_trace_list.add(trace_name)
-  return singlecore_trace_list, multicore_trace_list
+  return multicore_trace_list
+
+def get_singlecore_traces(trace_mpki_file):
+  singlecore_trace_list = []
+  with open(trace_mpki_file, 'r') as f:
+    for line in f:
+      line = line.strip()
+      trace, mpki = line.split(',')
+      singlecore_trace_list.append(trace)
+
+  return singlecore_trace_list
 
 def get_singlecore_run_commands():
   run_commands = []
-  singlecore_traces, _ = get_trace_list(TRACE_COMB_FILE)
+  singlecore_traces = get_singlecore_traces(TRACE_MPKI_FILE)
 
   for device in device_list:
     for org in org_list:
@@ -125,7 +133,7 @@ def get_singlecore_run_commands():
 
 def get_multicore_run_commands():
   run_commands = []
-  _, multicore_traces = get_trace_list(TRACE_COMB_FILE)
+  multicore_traces = get_multicore_traces(TRACE_COMB_FILE)
 
   for device in device_list:
     for org in org_list:
