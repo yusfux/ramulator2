@@ -1,9 +1,9 @@
 Frontend:
   impl: SimpleO3
   clock_ratio: 8
-  num_expected_insts: 10000000
+  num_expected_insts: 10
   traces: 
-    - example_inst.trace
+    - ultraram_study/traces/429.mcf
 
   Translation:
     impl: RandomTranslation
@@ -15,13 +15,15 @@ MemorySystem:
   clock_ratio: 3
 
   DRAM:
-    impl: URAM4
+    impl: URAM5
     org:
-      preset: URAM4_8Gb_x8
+      preset: URAM5_8Gb_x8
       channel: 1
       rank: 2
     timing:
-      preset: URAM4_2400R 
+      preset: URAM5_3200AN
+    scales:
+      tRCD: 1
     RFM:
       BRC: 2
 

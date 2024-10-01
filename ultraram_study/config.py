@@ -11,7 +11,7 @@ SLURM_SUBMIT_DELAY = 0.1
 #----------------------- RAMULATOR CONFIGURATION PARAMETERS --------------------
 #-------------------------------------------------------------------------------
 
-device_list     = ['DDR4', 'DDR5', 'URAM4', 'URAM5', 'FURAM4', 'FURAM5']
+device_list     = ['DDR5', 'URAM5',]
 org_list        = ['16Gb_x8']
 row_policy_list = ['ClosedRowPolicy', 'OpenRowPolicy']
 
@@ -20,8 +20,6 @@ refresh_manager = {
   'DDR5'   : 'AllBank',
   'URAM4'  : 'NoRefresh',
   'URAM5'  : 'NoRefresh',
-  'FURAM4' : 'NoRefresh',
-  'FURAM5' : 'NoRefresh',
 }
 
 timing_list = {
@@ -29,13 +27,9 @@ timing_list = {
   'DDR5'   : ['3200AN'],
   'URAM4'  : ['3200AA'],
   'URAM5'  : ['3200AN'],
-  'FURAM4' : ['3200AA'],
-  'FURAM5' : ['3200AN']
-  }
-
-trcd_list = {
-  'URAM4'  : '100',
-  'URAM5'  : '100',
-  'FURAM4' : '10',
-  'FURAM5' : '10'
 }
+
+import pandas as pd
+scale_list = pd.read_csv('scaling.csv')
+for column in scale_list.columns[1:]:
+  scale_list[column] = scale_list[column].astype(float)

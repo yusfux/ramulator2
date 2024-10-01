@@ -83,51 +83,48 @@ def get_singlecore_run_commands():
     for org in org_list:
       for row_policy in row_policy_list:
         for timing in timing_list[device]:
-          for trace in singlecore_traces:
-            sbatch_filename    = f'{WORK_DIR}/run_scripts/{device}_{org}_{timing}_{row_policy}_{trace}.sh'
-            config_filename    = f'{RESULT_DIR}/configs/{device}_{org}_{timing}_{row_policy}_{trace}.yaml'
-            result_filename    = f'{RESULT_DIR}/stats/{device}_{org}_{timing}_{row_policy}_{trace}.yaml'
-            error_filename     = f'{RESULT_DIR}/errors/{device}_{org}_{timing}_{row_policy}_{trace}.txt'
-            cmd_count_filename = f'{RESULT_DIR}/cmd_counts/{device}_{org}_{timing}_{row_policy}_{trace}.txt'
-            wr_count_filename  = f'{RESULT_DIR}/wr_counts/{device}_{org}_{timing}_{row_policy}_{trace}.txt'
+          for scale_idx in range(scale_list['area_scaling_factor'].size):
+            for trace in singlecore_traces:
+              sbatch_filename    = f'{WORK_DIR}/run_scripts/{device}_{org}_{timing}_{row_policy}_{scale_list['area_scaling_factor'][scale_idx]}_{trace}.sh'
+              config_filename    = f'{RESULT_DIR}/configs/{device}_{org}_{timing}_{row_policy}_{scale_list['area_scaling_factor'][scale_idx]}_{trace}.yaml'
+              result_filename    = f'{RESULT_DIR}/stats/{device}_{org}_{timing}_{row_policy}_{scale_list['area_scaling_factor'][scale_idx]}_{trace}.yaml'
+              error_filename     = f'{RESULT_DIR}/errors/{device}_{org}_{timing}_{row_policy}_{scale_list['area_scaling_factor'][scale_idx]}_{trace}.txt'
+              cmd_count_filename = f'{RESULT_DIR}/cmd_counts/{device}_{org}_{timing}_{row_policy}_{scale_list['area_scaling_factor'][scale_idx]}_{trace}.txt'
+              wr_count_filename  = f'{RESULT_DIR}/wr_counts/{device}_{org}_{timing}_{row_policy}_{scale_list['area_scaling_factor'][scale_idx]}_{trace}.txt'
 
-            config = copy.deepcopy(base_config)
-            config['Frontend']['traces'] = [f'{TRACE_DIR}/{trace}']
-            config['MemorySystem']['DRAM']['impl'] = device
-            config['MemorySystem']['DRAM']['org']['preset'] = f'{device}_{org}'
-            config['MemorySystem']['DRAM']['timing']['preset'] = f'{device}_{timing}'
-            config['MemorySystem']['Controller']['RefreshManager']['impl'] = refresh_manager[device]
-            config['MemorySystem']['Controller']['RowPolicy']['impl'] = row_policy
-            config['MemorySystem']['Controller']['plugins'][0]['ControllerPlugin']['path'] = cmd_count_filename
-            config['MemorySystem']['Controller']['plugins'].append({
-              'ControllerPlugin' : {
-                'impl': 'WriteCounter',
-                'path': wr_count_filename
-                }
-              })
-            
-            #TODO: need to find a better way for below lines, it looks terrible
-            if device == 'DDR5':
-              config['MemorySystem']['Controller']['plugins'].append({'ControllerPlugin' : {'impl': 'RFMManager'}})
-            if device.startswith('FURAM') or device.startswith('URAM'):
-              config['MemorySystem']['DRAM']['timing']['tRCD'] = trcd_list[device]
-            if device.startswith('FURAM'):
-              furam = device.replace('FURAM', 'URAM')
-              config['MemorySystem']['DRAM']['impl'] = furam
-              config['MemorySystem']['DRAM']['org']['preset'] = f'{furam}_{org}'
-              config['MemorySystem']['DRAM']['timing']['preset'] = f'{furam}_{timing}'
+              config = copy.deepcopy(base_config)
+              config['Frontend']['traces'] = [f'{TRACE_DIR}/{trace}']
+              config['MemorySystem']['DRAM']['impl'] = device
+              config['MemorySystem']['DRAM']['org']['preset'] = f'{device}_{org}'
+              config['MemorySystem']['DRAM']['timing']['preset'] = f'{device}_{timing}'
+              config['MemorySystem']['Controller']['RefreshManager']['impl'] = refresh_manager[device]
+              config['MemorySystem']['Controller']['RowPolicy']['impl'] = row_policy
+              config['MemorySystem']['Controller']['plugins'][0]['ControllerPlugin']['path'] = cmd_count_filename
+              config['MemorySystem']['Controller']['plugins'].append({
+                'ControllerPlugin' : {
+                  'impl': 'WriteCounter',
+                  'path': wr_count_filename
+                  }
+                })
 
-            with open(config_filename, 'w') as f:
-              yaml.dump(config, f)
-            
-            with open(sbatch_filename, 'w') as f:
-              f.write(CMD_HEADER + '\n')
-              f.write(f'{CMD} -f {config_filename}' + '\n')
+              for scales in scale_list.columns[1:]:
+                config['MemorySystem']['DRAM']['scales'][scales] = float(scale_list.loc[scale_idx, scales])
+              
+              #TODO: need to find a better way for below lines, it looks terrible
+              if device == 'DDR5':
+                config['MemorySystem']['Controller']['plugins'].append({'ControllerPlugin' : {'impl': 'RFMManager'}})
 
-            sbatch_cmd = f'{SBATCH_CMD} --chdir={WORK_DIR} --output={result_filename}'
-            sbatch_cmd += f' --error={error_filename} --partition={PARTITION_NAME} --job-name="ramulator2" {sbatch_filename}'
+              with open(config_filename, 'w') as f:
+                yaml.dump(config, f)
+              
+              with open(sbatch_filename, 'w') as f:
+                f.write(CMD_HEADER + '\n')
+                f.write(f'{CMD} -f {config_filename}' + '\n')
 
-            run_commands.append(sbatch_cmd)
+              sbatch_cmd = f'{SBATCH_CMD} --chdir={WORK_DIR} --output={result_filename}'
+              sbatch_cmd += f' --error={error_filename} --partition={PARTITION_NAME} --job-name="ramulator2" {sbatch_filename}'
+
+              run_commands.append(sbatch_cmd)
   
   return run_commands
 
@@ -139,51 +136,48 @@ def get_multicore_run_commands():
     for org in org_list:
       for row_policy in row_policy_list:
         for timing in timing_list[device]:
-          for trace in multicore_traces:
-            sbatch_filename    = f'{WORK_DIR}/run_scripts/{device}_{org}_{timing}_{row_policy}_{trace}.sh'
-            config_filename    = f'{RESULT_DIR}/configs/{device}_{org}_{timing}_{row_policy}_{trace}.yaml'
-            result_filename    = f'{RESULT_DIR}/stats/{device}_{org}_{timing}_{row_policy}_{trace}.yaml'
-            error_filename     = f'{RESULT_DIR}/errors/{device}_{org}_{timing}_{row_policy}_{trace}.txt'
-            cmd_count_filename = f'{RESULT_DIR}/cmd_counts/{device}_{org}_{timing}_{row_policy}_{trace}.txt'
-            wr_count_filename  = f'{RESULT_DIR}/wr_counts/{device}_{org}_{timing}_{row_policy}_{trace}.txt'
+          for scale_idx in range(scale_list['area_scaling_factor'].size):
+            for trace in multicore_traces:
+              sbatch_filename    = f'{WORK_DIR}/run_scripts/{device}_{org}_{timing}_{row_policy}_{scale_list['area_scaling_factor'][scale_idx]}_{trace}.sh'
+              config_filename    = f'{RESULT_DIR}/configs/{device}_{org}_{timing}_{row_policy}_{scale_list['area_scaling_factor'][scale_idx]}_{trace}.yaml'
+              result_filename    = f'{RESULT_DIR}/stats/{device}_{org}_{timing}_{row_policy}_{scale_list['area_scaling_factor'][scale_idx]}_{trace}.yaml'
+              error_filename     = f'{RESULT_DIR}/errors/{device}_{org}_{timing}_{row_policy}_{scale_list['area_scaling_factor'][scale_idx]}_{trace}.txt'
+              cmd_count_filename = f'{RESULT_DIR}/cmd_counts/{device}_{org}_{timing}_{row_policy}_{scale_list['area_scaling_factor'][scale_idx]}_{trace}.txt'
+              wr_count_filename  = f'{RESULT_DIR}/wr_counts/{device}_{org}_{timing}_{row_policy}_{scale_list['area_scaling_factor'][scale_idx]}_{trace}.txt'
 
-            config = copy.deepcopy(base_config)
-            config["Frontend"]["traces"] = [f'{TRACE_DIR}/{trace_group}' for trace_group in trace_combs[trace]]
-            config['MemorySystem']['DRAM']['impl'] = device
-            config['MemorySystem']['DRAM']['org']['preset'] = f'{device}_{org}'
-            config['MemorySystem']['DRAM']['timing']['preset'] = f'{device}_{timing}'
-            config['MemorySystem']['Controller']['RefreshManager']['impl'] = refresh_manager[device]
-            config['MemorySystem']['Controller']['RowPolicy']['impl'] = row_policy
-            config['MemorySystem']['Controller']['plugins'][0]['ControllerPlugin']['path'] = cmd_count_filename
-            config['MemorySystem']['Controller']['plugins'].append({
-              'ControllerPlugin' : {
-                'impl': 'WriteCounter',
-                'path': wr_count_filename
-                }
-              })
-            
-            #TODO: need to find a better way for below lines, it looks terrible
-            if device == 'DDR5':
-              config['MemorySystem']['Controller']['plugins'].append({'ControllerPlugin' : {'impl': 'RFMManager'}})
-            if device.startswith('FURAM') or device.startswith('URAM'):
-              config['MemorySystem']['DRAM']['timing']['tRCD'] = trcd_list[device]
-            if device.startswith('FURAM'):
-              furam = device.replace('FURAM', 'URAM')
-              config['MemorySystem']['DRAM']['impl'] = furam
-              config['MemorySystem']['DRAM']['org']['preset'] = f'{furam}_{org}'
-              config['MemorySystem']['DRAM']['timing']['preset'] = f'{furam}_{timing}'
+              config = copy.deepcopy(base_config)
+              config["Frontend"]["traces"] = [f'{TRACE_DIR}/{trace_group}' for trace_group in trace_combs[trace]]
+              config['MemorySystem']['DRAM']['impl'] = device
+              config['MemorySystem']['DRAM']['org']['preset'] = f'{device}_{org}'
+              config['MemorySystem']['DRAM']['timing']['preset'] = f'{device}_{timing}'
+              config['MemorySystem']['Controller']['RefreshManager']['impl'] = refresh_manager[device]
+              config['MemorySystem']['Controller']['RowPolicy']['impl'] = row_policy
+              config['MemorySystem']['Controller']['plugins'][0]['ControllerPlugin']['path'] = cmd_count_filename
+              config['MemorySystem']['Controller']['plugins'].append({
+                'ControllerPlugin' : {
+                  'impl': 'WriteCounter',
+                  'path': wr_count_filename
+                  }
+                })
+              
+              #TODO: need to find a better way for below lines, it looks terrible
+              if device == 'DDR5':
+                config['MemorySystem']['Controller']['plugins'].append({'ControllerPlugin' : {'impl': 'RFMManager'}})
 
-            with open(config_filename, 'w') as f:
-              yaml.dump(config, f)
-            
-            with open(sbatch_filename, 'w') as f:
-              f.write(CMD_HEADER + '\n')
-              f.write(f'{CMD} -f {config_filename}' + '\n')
+              for scales in scale_list.columns[1:]:
+                config['MemorySystem']['DRAM']['scales'][scales] = float(scale_list.loc[scale_idx, scales])
 
-            sbatch_cmd = f'{SBATCH_CMD} --chdir={WORK_DIR} --output={result_filename}'
-            sbatch_cmd += f' --error={error_filename} --partition={PARTITION_NAME} --job-name="ramulator2" {sbatch_filename}'
+              with open(config_filename, 'w') as f:
+                yaml.dump(config, f)
+              
+              with open(sbatch_filename, 'w') as f:
+                f.write(CMD_HEADER + '\n')
+                f.write(f'{CMD} -f {config_filename}' + '\n')
 
-            run_commands.append(sbatch_cmd)
+              sbatch_cmd = f'{SBATCH_CMD} --chdir={WORK_DIR} --output={result_filename}'
+              sbatch_cmd += f' --error={error_filename} --partition={PARTITION_NAME} --job-name="ramulator2" {sbatch_filename}'
+
+              run_commands.append(sbatch_cmd)
   return run_commands
 
 for path in [

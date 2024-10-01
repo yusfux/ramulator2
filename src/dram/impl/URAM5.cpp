@@ -486,29 +486,27 @@ class URAM5 : public IDRAM, public Implementation {
 
       // Overwrite timing parameters with any user-provided value
       // Rate and tCK should not be overwritten
-      // for (int i = 1; i < m_timings.size() - 1; i++) {
-      //   auto timing_name = std::string(m_timings(i));
+      for (int i = 1; i < m_timings.size() - 1; i++) {
+        auto timing_name = std::string(m_timings(i));
 
-      //   if (auto provided_timing = param_group("timing").param<int>(timing_name).optional()) {
-      //     // Check if the user specifies in the number of cycles (e.g., nRCD)
-      //     m_timing_vals(i) = *provided_timing;
-      //   } else if (auto provided_timing = param_group("timing").param<float>(timing_name.replace(0, 1, "t")).optional()) {
-      //     // Check if the user specifies in nanoseconds (e.g., tRCD)
-      //     m_timing_vals(i) = JEDEC_rounding_DDR5(*provided_timing, tCK_ps);
-      //   }
-      // }
-
-      // Overwrite timing parameters with URAM4 constants
-      auto ultraram_params = {"nRCD", "nRAS", "nRP", "nRC"};
-      if(auto provided_timing = param_group("timing").param<int>("nRCD").optional()) {
-        auto ultraram_const = (float)(*provided_timing) / m_timing_vals("nRCD");
-        for (auto& param : ultraram_params) {
-          m_timing_vals(param) = (int)(ultraram_const * m_timing_vals(param));
+        if (auto provided_timing = param_group("timing").param<int>(timing_name).optional()) {
+          // Check if the user specifies in the number of cycles (e.g., nRCD)
+          m_timing_vals(i) = *provided_timing;
+        } else if (auto provided_timing = param_group("timing").param<float>(timing_name.replace(0, 1, "t")).optional()) {
+          // Check if the user specifies in nanoseconds (e.g., tRCD)
+          m_timing_vals(i) = JEDEC_rounding_DDR5(*provided_timing, tCK_ps);
         }
-      } else if (auto provided_timing = param_group("timing").param<float>("tRCD").optional()) {
-        auto ultraram_const = (float)JEDEC_rounding(*provided_timing, tCK_ps) / m_timing_vals("nRCD");
-        for (auto& param : ultraram_params) {
-          m_timing_vals(param) = (int)(ultraram_const * m_timing_vals(param));
+      }
+
+      for (int i = 1; i < m_timings.size() - 1; i++) {
+        auto timing_name = std::string(m_timings(i));
+
+        if (auto provided_timing = param_group("scales").param<int>(timing_name).optional()) {
+          // Check if the user specifies in the number of cycles (e.g., nRCD)
+          m_timing_vals(i) = *provided_timing * m_timing_vals(i);
+        } else if (auto provided_timing = param_group("scales").param<float>(timing_name.replace(0, 1, "t")).optional()) {
+          // Check if the user specifies in nanoseconds (e.g., tRCD)
+          m_timing_vals(i) = *provided_timing * m_timing_vals(i);
         }
       }
 
@@ -517,6 +515,7 @@ class URAM5 : public IDRAM, public Implementation {
         if (m_timing_vals(i) == -1) {
           throw ConfigurationError("In \"{}\", timing {} is not specified!", get_name(), m_timings(i));
         }
+        printf("Timing %d: %d\n", i, m_timing_vals(i));
       }      
 
       // Check if there is any uninitialized timings
