@@ -17,7 +17,7 @@ def run_slurm(commands):
     time.sleep(SLURM_SUBMIT_DELAY)
 
 commands = []
-with open('run.sh', 'r') as f:
+with open('sbatch_runs.sh', 'r') as f:
   commands = [l.strip() for l in f.readlines()]
 
 run_slurm(commands)

@@ -4,7 +4,6 @@ ext/
 ramulator2
 *.so
 autobuild.sh
-build.sh
 ultraram_study/traces
 ultraram_study/results
 ultraram_study/run_scripts
