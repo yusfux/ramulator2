@@ -1,6 +1,9 @@
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
+import subprocess
 import time
+import argparse
+import tqdm
 
 from config import *
 
@@ -16,8 +19,43 @@ def run_slurm(commands):
     os.system(cmd)
     time.sleep(SLURM_SUBMIT_DELAY)
 
-commands = []
-with open('sbatch_runs.sh', 'r') as f:
-  commands = [l.strip() for l in f.readlines()]
+def run_personal(commands):
+  def run_command(command):
+    try:
+      result = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+      return result.stdout
+    except subprocess.CalledProcessError as e:
+      print(f"[ERROR] executing command '{command}': {e}")
+      print(f"[ERROR] stderr: {e.stderr}")
+      return e.stderr
 
-run_slurm(commands)
+  with ThreadPoolExecutor(max_workers=PERS_NUM_THREADS) as executor:
+    futures = [executor.submit(run_command, cmd) for cmd in commands]
+
+    for _ in tqdm.tqdm(as_completed(futures), total=len(futures), desc="Running benchmarks"):
+      pass
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+
+argparser = argparse.ArgumentParser(
+  description='Execute generated scripts from setup_scripts.py'
+)
+
+argparser.add_argument("-rs", "--run_slurm", action=argparse.BooleanOptionalAction)
+args = argparser.parse_args()
+
+RUN_SLURM = args.run_slurm
+
+if RUN_SLURM:
+  commands = []
+  with open('run_slurm.sh', 'r') as f:
+    commands = [l.strip() for l in f.readlines()]
+
+  run_slurm(commands)
+else:
+  commands = []
+  with open('run_personal.sh', 'r') as f:
+    commands = [l.strip() for l in f.readlines()]
+
+  run_personal(commands)

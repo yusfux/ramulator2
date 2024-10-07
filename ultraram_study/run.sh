@@ -5,10 +5,9 @@ SCRIPTS_DIR="scripts"
 
 echo "[INFO] Generating trace combinations for singlecore and multicore traces"
 python3 $SCRIPTS_DIR/setup_trace_combinations.py \
-    --trace_path "$PWD/traces" \
     --output_path "$PWD/traces" \
     --mpki_file "$PWD/traces/mpki.csv" \
-    --single_core --multi_core
+    --multi_core --single_core
 
 echo "[INFO] Generating Ramulator2 configurations and run scripts for ULTRARAM study"
 python3 $SCRIPTS_DIR/setup_scripts.py \
@@ -18,11 +17,21 @@ python3 $SCRIPTS_DIR/setup_scripts.py \
     --trace_directory "$PWD/traces" \
     --result_directory "$PWD/results" \
     --partition_name "$AE_SLURM_PART_NAME" \
-    --output_file "$PWD/sbatch_runs.sh"
+    --output_file "$PWD/run_slurm.sh"
 
-# echo "[INFO] Starting Ramulator2 ULTRARAM simulations"
-# python3 $SCRIPTS_DIR/execute_scripts.py
+echo "[INFO] Starting Ramulator2 ULTRARAM simulations"
+python3 $SCRIPTS_DIR/execute_scripts.py \
+    # --run_slurm
 
-# echo "[INFO] Removing 'sbatch_runs.sh' and 'run_scripts' folder"
-# rm -rf "$PWD/run_scripts/" 
-# rm "$PWD/sbatch_runs.sh" 
+echo "[INFO] Checking and removing 'run_slurm.sh', 'run_personal.sh' and 'run_scripts' folder if they exist"
+if [ -d "$PWD/run_scripts" ]; then
+    rm -rf "$PWD/run_scripts/"
+fi
+
+if [ -f "$PWD/run_slurm.sh" ]; then
+    rm -rf "$PWD/run_slurm.sh"
+fi
+
+if [ -f "$PWD/run_personal.sh" ]; then
+    rm -rf "$PWD/run_personal.sh"
+fi

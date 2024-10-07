@@ -1,9 +1,9 @@
 Frontend:
   impl: SimpleO3
   clock_ratio: 8
-  num_expected_insts: 10
+  num_expected_insts: 100000
   traces: 
-    - ultraram_study/traces/429.mcf
+    - traces/429.mcf
 
   Translation:
     impl: RandomTranslation
@@ -23,7 +23,6 @@ MemorySystem:
     timing:
       preset: URAM5_3200AN
     scales:
-      tRCD: 1
     RFM:
       BRC: 2
 
@@ -36,10 +35,6 @@ MemorySystem:
     RowPolicy:
       impl: ClosedRowPolicy
       cap: 4
-    plugins:
-      - ControllerPlugin:
-          impl: CommandCounter
-          path: ./should_be_replaced.txt
 
   AddrMapper:
     impl: RoBaRaCoCh

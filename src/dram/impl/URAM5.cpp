@@ -515,14 +515,6 @@ class URAM5 : public IDRAM, public Implementation {
         if (m_timing_vals(i) == -1) {
           throw ConfigurationError("In \"{}\", timing {} is not specified!", get_name(), m_timings(i));
         }
-        printf("Timing %d: %d\n", i, m_timing_vals(i));
-      }      
-
-      // Check if there is any uninitialized timings
-      for (int i = 0; i < m_timing_vals.size(); i++) {
-        if (m_timing_vals(i) == -1) {
-          throw ConfigurationError("In \"{}\", timing {} is not specified!", get_name(), m_timings(i));
-        }
       }      
 
       // Set read latency

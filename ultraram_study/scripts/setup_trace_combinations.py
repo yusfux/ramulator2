@@ -5,15 +5,13 @@ argparser = argparse.ArgumentParser(
   description='Create trace combination file for singlecore/multicore benchmarks..'
 )
 
-argparser.add_argument('-tp', '--trace_path', default='traces/')
-argparser.add_argument('-op', '--output_path', default='traces/')
+argparser.add_argument('-op', '--output_path', default='traces')
 argparser.add_argument('-mf', '--mpki_file', default='traces/mpki.csv')
 argparser.add_argument('-sc', '--single_core', action=argparse.BooleanOptionalAction)
 argparser.add_argument('-mc', '--multi_core', action=argparse.BooleanOptionalAction)
 
 args = argparser.parse_args()
 
-TRACE_PATH  = args.trace_path
 OUTPUT_PATH = args.output_path
 MPKI_FILE   = args.mpki_file
 SINGLE_CORE = args.single_core
