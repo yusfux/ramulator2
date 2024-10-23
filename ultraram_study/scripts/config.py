@@ -12,30 +12,30 @@ SLURM_EXCLUDE_NODES = 'kratos[10]'
 #----------------------- PERSONAL CONFIGURATION PARAMETERS ---------------------
 #-------------------------------------------------------------------------------
 
-PERS_NUM_THREADS = 8
+PERS_NUM_THREADS = 12
 
 #-------------------------------------------------------------------------------
 #----------------- ADDITIONAL RAMULATOR CONFIGURATION FUNCTIONS ----------------
 #-------------------------------------------------------------------------------
 
-import csv
-def get_uram_timings():
-  data = []
-  with open('area_scaling.csv', 'r') as file:
-    for row in csv.DictReader(file):
-      for key, value in row.items():
-        row[key] = float(value)
-      data.append(row)
-  return data
+import pandas as pd
+df = pd.read_csv('area_scaling.csv', skipinitialspace=True)
 
-def add_uram_timings(config, scale, list):
-  config['MemorySystem']['DRAM']['scales'] = {}
-  for element in list:
-    if element['area_scaling'] == scale:
-      for key, value in element.items():
-        config['MemorySystem']['DRAM']['scales'][key] = value
+def add_uram_scales(config, area_scale, voltage_scale):
+  val = df[(df['area_scaling_factor'] == area_scale) & (df['vdd_vpp_scaling_factor'] == voltage_scale)]
+  timings = {col.replace('(ns)', ''): float(val[col].iloc[0]) for col in val.columns if col.endswith('(ns)')}
+  currents = {col.replace('(ma)', ''): float(val[col].iloc[0]) for col in val.columns if col.endswith('(ma)')}
 
-area_scaling_list = get_uram_timings()
+  config['MemorySystem']['DRAM']['voltageScales'] = {}
+  config['MemorySystem']['DRAM']['currentScales'] = {}
+  config['MemorySystem']['DRAM']['timingScales']  = {}
+
+  config['MemorySystem']['DRAM']['voltageScales']['VDD'] = voltage_scale
+  config['MemorySystem']['DRAM']['voltageScales']['VPP'] = voltage_scale
+  for current, value in currents.items():
+    config['MemorySystem']['DRAM']['currentScales'][current] = value
+  for timing, value in timings.items():
+    config['MemorySystem']['DRAM']['timingScales'][timing] = value
 
 #-------------------------------------------------------------------------------
 #-------------------- DEFAULT RAMULATOR CONFIGURATION PARAMETERS ---------------
@@ -49,8 +49,8 @@ org_list = {
 }
 
 row_policy_list = {
-  'DDR5' :  ['ClosedRowPolicy', 'OpenRowPolicy'],
-  'URAM5':  ['ClosedRowPolicy', 'OpenRowPolicy']
+  'DDR5' :  ['OpenRowPolicy'],
+  'URAM5':  ['OpenRowPolicy']
 }
 
 refresh_manager_list = {
@@ -68,7 +68,12 @@ plugin_list = {
   'URAM5'  : [('WriteCounter', 'wr_counts'), ('CommandCounter', 'cmd_counts')]
 }
 
-scale_list = {
+area_scaling_list = {
   'DDR5'   : [1.0],
-  'URAM5'  : [scale['area_scaling'] for scale in area_scaling_list]
+  'URAM5'  : [float(scale) for scale in df['area_scaling_factor'].unique()]
+}
+
+voltage_scaling_list = {
+  'DDR5'   : [1.0],
+  'URAM5'  : [float(scale) for scale in df['vdd_vpp_scaling_factor'].unique()]
 }

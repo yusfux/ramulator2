@@ -18,7 +18,7 @@ SINGLE_CORE = args.single_core
 MULTI_CORE  = args.multi_core
 
 #TODO: need to find more robust way to determine the mid point
-MID_POINT = 5
+MID_POINT = 10
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -49,7 +49,7 @@ def get_multicore_traces():
     num_h = group.count('H')
     num_l = group.count('L')
 
-    for i in range(5):
+    for i in range(2):
       highs = random.sample(high_traces, num_h)
       lows = random.sample(low_traces, num_l)
 

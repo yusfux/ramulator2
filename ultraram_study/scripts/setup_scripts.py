@@ -60,54 +60,55 @@ def get_run_commands(base_config, trace_list):
         for timing in timing_list[device]:
           for row_policy in row_policy_list[device]:
             for refresh_manager in refresh_manager_list[device]:
-              for area_scaling in scale_list[device]:
-                sbatch_filename = f'{WORK_DIR}/run_scripts/{device}_{org}_{timing}_{row_policy}_{refresh_manager}_{area_scaling}_{trace_group[0]}.sh'
-                config_filename = f'{RESULT_DIR}/configs/{device}_{org}_{timing}_{row_policy}_{refresh_manager}_{area_scaling}_{trace_group[0]}.yaml'
-                result_filename = f'{RESULT_DIR}/stats/{device}_{org}_{timing}_{row_policy}_{refresh_manager}_{area_scaling}_{trace_group[0]}.yaml'
-                error_filename  = f'{RESULT_DIR}/errors/{device}_{org}_{timing}_{row_policy}_{refresh_manager}_{area_scaling}_{trace_group[0]}.txt'
-                plugin_filename = f'{RESULT_DIR}/plugins/PLUGIN_NAME/{device}_{org}_{timing}_{row_policy}_{refresh_manager}_{area_scaling}_{trace_group[0]}.txt'
+              for area_scale in area_scaling_list[device]:
+                for voltage_scale in voltage_scaling_list[device]:
+                  sbatch_filename = f'{WORK_DIR}/run_scripts/{device}_{org}_{timing}_{row_policy}_{refresh_manager}_{area_scale}_{voltage_scale}_{trace_group[0]}.sh'
+                  config_filename = f'{RESULT_DIR}/configs/{device}_{org}_{timing}_{row_policy}_{refresh_manager}_{area_scale}_{voltage_scale}_{trace_group[0]}.yaml'
+                  result_filename = f'{RESULT_DIR}/stats/{device}_{org}_{timing}_{row_policy}_{refresh_manager}_{area_scale}_{voltage_scale}_{trace_group[0]}.yaml'
+                  error_filename  = f'{RESULT_DIR}/errors/{device}_{org}_{timing}_{row_policy}_{refresh_manager}_{area_scale}_{voltage_scale}_{trace_group[0]}.txt'
+                  plugin_filename = f'{RESULT_DIR}/plugins/PLUGIN_NAME/{device}_{org}_{timing}_{row_policy}_{refresh_manager}_{area_scale}_{voltage_scale}_{trace_group[0]}.txt'
 
-                config = copy.deepcopy(base_config)
-                config["Frontend"]["traces"] = [f'{TRACE_DIR}/{trace}' for trace in trace_group[1:]]
-                config['MemorySystem']['DRAM']['impl'] = device
-                config['MemorySystem']['DRAM']['org']['preset'] = f'{device}_{org}'
-                config['MemorySystem']['DRAM']['timing']['preset'] = f'{device}_{timing}'
-                config['MemorySystem']['Controller']['RefreshManager']['impl'] = refresh_manager
-                config['MemorySystem']['Controller']['RowPolicy']['impl'] = row_policy
+                  config = copy.deepcopy(base_config)
+                  config["Frontend"]["traces"] = [f'{TRACE_DIR}/{trace}' for trace in trace_group[1:]]
+                  config['MemorySystem']['DRAM']['impl'] = device
+                  config['MemorySystem']['DRAM']['org']['preset'] = f'{device}_{org}'
+                  config['MemorySystem']['DRAM']['timing']['preset'] = f'{device}_{timing}'
+                  config['MemorySystem']['Controller']['RefreshManager']['impl'] = refresh_manager
+                  config['MemorySystem']['Controller']['RowPolicy']['impl'] = row_policy
 
-                config['MemorySystem']['Controller']['plugins'] = []
-                for plugin in plugin_list[device]:
-                  config['MemorySystem']['Controller']['plugins'].append({
-                    'ControllerPlugin' : {
-                      'impl': plugin[0],
-                      'path': plugin_filename.replace('PLUGIN_NAME', plugin[1])
-                      }
-                  })
+                  config['MemorySystem']['Controller']['plugins'] = []
+                  for plugin in plugin_list[device]:
+                    config['MemorySystem']['Controller']['plugins'].append({
+                      'ControllerPlugin' : {
+                        'impl': plugin[0],
+                        'path': plugin_filename.replace('PLUGIN_NAME', plugin[1])
+                        }
+                    })
 
-                # ------ additional configurations for URAM5 ------
-                if device == 'URAM5':
-                  add_uram_timings(config, area_scaling, area_scaling_list)
-                # ------ additional configurations for URAM5 ------
+                  # ------ additional configurations for URAM5 ------
+                  if device == 'URAM5':
+                    add_uram_scales(config, area_scale, voltage_scale)
+                  # ------ additional configurations for URAM5 ------
 
-                # ------ additional configurations for DDR5 ------
-                if device == 'DDR5':
-                  pass
-                # ------ additional configurations for DDR5 ------
+                  # ------ additional configurations for DDR5 ------
+                  if device == 'DDR5':
+                    pass
+                  # ------ additional configurations for DDR5 ------
 
-                with open(config_filename, 'w') as f:
-                  yaml.dump(config, f)
+                  with open(config_filename, 'w') as f:
+                    yaml.dump(config, f)
 
-                with open(sbatch_filename, 'w') as f:
-                  f.write(CMD_HEADER + '\n')
-                  f.write(f'{CMD} -f {config_filename}' + '\n')
+                  with open(sbatch_filename, 'w') as f:
+                    f.write(CMD_HEADER + '\n')
+                    f.write(f'{CMD} -f {config_filename}' + '\n')
 
-                sbatch_cmd = f'{SBATCH_CMD} --exclude={SLURM_EXCLUDE_NODES} --chdir={WORK_DIR} --output={result_filename}'
-                sbatch_cmd += f' --error={error_filename} --partition={PARTITION_NAME} --job-name="ramulator2" {sbatch_filename}'
+                  sbatch_cmd = f'{SBATCH_CMD} --exclude={SLURM_EXCLUDE_NODES} --chdir={WORK_DIR} --output={result_filename}'
+                  sbatch_cmd += f' --error={error_filename} --partition={PARTITION_NAME} --job-name="ramulator2" {sbatch_filename}'
 
-                pers_cmd = f'bash {sbatch_filename}'
-                pers_cmd += f' > {result_filename} 2> {error_filename}'
+                  pers_cmd = f'bash {sbatch_filename}'
+                  pers_cmd += f' > {result_filename} 2> {error_filename}'
 
-                run_commands.append((sbatch_cmd, pers_cmd))
+                  run_commands.append((sbatch_cmd, pers_cmd))
   return run_commands
               
 #-------------------------------------------------------------------------------

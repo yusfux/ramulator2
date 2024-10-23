@@ -1,7 +1,7 @@
 Frontend:
   impl: SimpleO3
   clock_ratio: 8
-  num_expected_insts: 100000
+  num_expected_insts: 10000000
   traces: 
     - traces/429.mcf
 
@@ -16,15 +16,19 @@ MemorySystem:
 
   DRAM:
     impl: URAM5
+    drampower_enable: true
     org:
       preset: URAM5_8Gb_x8
       channel: 1
       rank: 2
     timing:
       preset: URAM5_3200AN
-    scales:
     RFM:
       BRC: 2
+    voltage:
+      preset: Default
+    current:
+      preset: Default
 
   Controller:
     impl: Generic
@@ -33,8 +37,8 @@ MemorySystem:
     RefreshManager:
       impl: NoRefresh
     RowPolicy:
-      impl: ClosedRowPolicy
-      cap: 4
+      impl: OpenRowPolicy
+      cap: 8
 
   AddrMapper:
     impl: RoBaRaCoCh

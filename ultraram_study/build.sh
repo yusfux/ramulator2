@@ -2,5 +2,5 @@
 
 cd ../build/
 cmake ..
-make -j 32
+make -j 16
 cp ./ramulator2 ../ultraram_study/ramulator2

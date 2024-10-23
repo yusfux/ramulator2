@@ -500,12 +500,7 @@ class URAM5 : public IDRAM, public Implementation {
 
       for (int i = 1; i < m_timings.size() - 1; i++) {
         auto timing_name = std::string(m_timings(i));
-
-        if (auto provided_timing = param_group("scales").param<int>(timing_name).optional()) {
-          // Check if the user specifies in the number of cycles (e.g., nRCD)
-          m_timing_vals(i) = *provided_timing * m_timing_vals(i);
-        } else if (auto provided_timing = param_group("scales").param<float>(timing_name.replace(0, 1, "t")).optional()) {
-          // Check if the user specifies in nanoseconds (e.g., tRCD)
+        if (auto provided_timing = param_group("timingScales").param<float>(timing_name.replace(0, 1, "t")).optional()) {
           m_timing_vals(i) = *provided_timing * m_timing_vals(i);
         }
       }
@@ -683,6 +678,20 @@ class URAM5 : public IDRAM, public Implementation {
           m_current_vals = current_presets.at(*preset_name);
         } else {
           throw ConfigurationError("Unrecognized current preset \"{}\" in {}!", *preset_name, get_name());
+        }
+      }
+
+      for (int i = 0; i < m_voltages.size(); i++) {
+        auto voltage_val = std::string(m_voltages(i));
+        if (auto provided_voltage = param_group("voltageScales").param<double>(voltage_val).optional()) {
+          m_voltage_vals(i) = *provided_voltage * m_voltage_vals(i);
+        }
+      }
+
+      for (int i = 0; i < m_currents.size(); i++) {
+        auto current_val = std::string(m_currents(i));
+        if (auto provided_current = param_group("currentScales").param<double>(current_val).optional()) {
+          m_current_vals(i) = *provided_current * m_current_vals(i);
         }
       }
 
