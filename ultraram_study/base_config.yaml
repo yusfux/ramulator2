@@ -1,7 +1,7 @@
 Frontend:
   impl: SimpleO3
   clock_ratio: 8
-  num_expected_insts: 10000000
+  num_expected_insts: 100000000
   traces: 
     - traces/429.mcf
 
@@ -41,4 +41,4 @@ MemorySystem:
       cap: 8
 
   AddrMapper:
-    impl: RoBaRaCoCh
+    impl: MOP4CLXOR

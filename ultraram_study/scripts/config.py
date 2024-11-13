@@ -33,7 +33,7 @@ def add_uram_scales(config, area_scale, voltage_scale):
   config['MemorySystem']['DRAM']['voltageScales']['VDD'] = voltage_scale
   config['MemorySystem']['DRAM']['voltageScales']['VPP'] = voltage_scale
   for current, value in currents.items():
-    config['MemorySystem']['DRAM']['currentScales'][current] = value
+    config['MemorySystem']['DRAM']['currentScales'][current.upper()] = value
   for timing, value in timings.items():
     config['MemorySystem']['DRAM']['timingScales'][timing] = value
 
@@ -64,8 +64,8 @@ timing_list = {
 }
 
 plugin_list = {
-  'DDR5'   : [('WriteCounter', 'wr_counts'), ('CommandCounter', 'cmd_counts'), ('RFMManager', '')],
-  'URAM5'  : [('WriteCounter', 'wr_counts'), ('CommandCounter', 'cmd_counts')]
+  'DDR5'   : [('CommandCounter', 'cmd_counts'), ('RFMManager', '')],
+  'URAM5'  : [('CommandCounter', 'cmd_counts')]
 }
 
 area_scaling_list = {
