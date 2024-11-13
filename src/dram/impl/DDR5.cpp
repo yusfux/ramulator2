@@ -184,6 +184,7 @@ class DDR5 : public IDRAM, public Implementation {
     FuncMatrix<PowerFunc_t<Node>>   m_powers;
 
     double s_total_rfm_energy = 0.0;
+    double s_total_ref_energy = 0.0;
 
     std::vector<size_t> s_total_rfm_cycles;
 
@@ -717,6 +718,7 @@ class DDR5 : public IDRAM, public Implementation {
       register_stat(s_total_cmd_energy).name("total_cmd_energy");
       register_stat(s_total_energy).name("total_energy");
       register_stat(s_total_rfm_energy).name("total_rfm_energy");
+      register_stat(s_total_ref_energy).name("total_ref_energy");
 
             
       for (auto& power_stat : m_power_stats){
@@ -802,6 +804,7 @@ class DDR5 : public IDRAM, public Implementation {
       s_total_cmd_energy += rank_stats.total_cmd_energy;
       s_total_energy += rank_stats.total_energy;
       s_total_rfm_energy += rfm_cmd_energy;
+      s_total_ref_energy += ref_cmd_energy;
 
       s_total_rfm_cycles[rank_stats.rank_id] = rank_stats.cmd_counters[m_cmds_counted("RFM")] * TS("nRFMsb");
     }

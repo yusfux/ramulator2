@@ -14,6 +14,7 @@ private:
     Clk_t m_clk = 0;
 
     int m_rfm_req_id = -1;
+    int m_vrr_req_id = -1;
     int m_no_send = -1;
 
     int m_rank_level = -1;
@@ -30,6 +31,7 @@ private:
     int m_num_cls = -1;
 
     int m_rfm_thresh = -1;
+    bool m_rfm_plus = false;
     bool m_debug = false;
 
     int s_rfm_counter = 0;
@@ -37,17 +39,19 @@ private:
 public:
     void init() override { 
         m_rfm_thresh = param<int>("rfm_thresh").default_val(80);
+        m_rfm_plus = param<bool>("rfm_plus").default_val(false);
         m_debug = param<bool>("debug").default_val(false);
     }
 
     void setup(IFrontEnd* frontend, IMemorySystem* memory_system) override {
         m_ctrl = cast_parent<IDRAMController>();
         m_dram = m_ctrl->m_dram;
-        if (!m_dram->m_requests.contains("rfm")) {
-            std::cout << "[Ramulator::RFMManager] [CRITICAL ERROR] DRAM Device does not support request: rfm" << std::endl; 
+        if (!m_dram->m_requests.contains("same-bank-rfm")) {
+            std::cout << "[Ramulator::RFMManager] [CRITICAL ERROR] DRAM Device does not support request: same-bank-rfm" << std::endl; 
             exit(0);
         }
-        m_rfm_req_id = m_dram->m_requests("rfm");
+        m_rfm_req_id = m_dram->m_requests("same-bank-rfm");
+        // m_vrr_req_id = m_dram->m_requests("victim-row-refresh");
 
         m_rank_level = m_dram->m_levels("rank");
         m_bank_level = m_dram->m_levels("bank");
@@ -95,28 +99,35 @@ public:
         }
 
         m_bank_ctrs[flat_bank_id]++;
-
         if (m_debug) {
             std::cout << "Rank     : " << req_it->addr_vec[m_rank_level] << std::endl;
             std::cout << "Bank     : " << req_it->addr_vec[m_bank_level] << std::endl;
             std::cout << "BankGroup: " << req_it->addr_vec[m_bankgroup_level] << std::endl;
             std::cout << "Flat Bank: " << flat_bank_id << std::endl;
         }
-
         if (m_bank_ctrs[flat_bank_id] < m_rfm_thresh) {
             return;
         }
          
-        for (int i = 0; i < m_bank_ctrs.size(); i++) {
-            m_bank_ctrs[i] = 0;
+        if (m_rfm_plus) {
+            m_bank_ctrs[flat_bank_id] = 0;
+        }
+        else {
+            for (int bg = 0; bg < m_num_bankgroups; bg++) {
+                int bank_id = req_it->addr_vec[m_rank_level] * m_num_banks_per_rank + bg * m_num_banks_per_bankgroup + req_it->addr_vec[m_bank_level];
+                m_bank_ctrs[bank_id] = 0;
+            }
         }
 
-        Request rfm(req.addr_vec, m_rfm_req_id);
-        rfm.addr_vec[m_bankgroup_level] = -1;
-        rfm.addr_vec[m_bank_level] = -1;
+        // TODO: We issue a timing-modified VRR as single bank RFM.
+        int cmd_id = m_rfm_plus ? m_vrr_req_id : m_rfm_req_id;
+        Request rfm(req.addr_vec, cmd_id);
+        if (!m_rfm_plus) {
+            rfm.addr_vec[m_bankgroup_level] = -1;
+        }
         // TODO: Add a buffer to retry later
         if (!m_ctrl->priority_send(rfm)) {
-            std::cout << "[Ramulator::RFMManager] [CRITICAL ERROR] Could not send request: rfm" << std::endl; 
+            std::cout << "[Ramulator::RFMManager] [CRITICAL ERROR] Could not send request: same-bank-rfm" << std::endl; 
             exit(0);
         }
         s_rfm_counter++;
