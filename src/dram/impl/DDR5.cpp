@@ -31,6 +31,7 @@ class DDR5 : public IDRAM, public Implementation {
       {"DDR5_3200AN",  {3200,   8,  24,  24,   24,   52,   75,   48,   12,  22,  2,    8,     8,     22+8+4,    8,     16,    22+8+16,   8,   -1,   -1,  -1,   -1,   -1,    -1,     30,    -1,   -1,   -1,     -1,     -1,    2,   625}},
       {"DDR5_3200BN",  {3200,   8,  26,  26,   26,   52,   77,   48,   12,  24,  2,    8,     8,     24+8+4,    8,     16,    24+8+16,   8,   -1,   -1,  -1,   -1,   -1,    -1,     30,    -1,   -1,   -1,     -1,     -1,    2,   625}},
       {"DDR5_3200C",   {3200,   8,  28,  28,   28,   52,   79,   48,   12,  26,  2,    8,     8,     26+8+4,    8,     16,    26+8+16,   8,   -1,   -1,  -1,   -1,   -1,    -1,     30,    -1,   -1,   -1,     -1,     -1,    2,   625}},
+      {"DDR5_8800AN",  {8800,   8,  62,  62,   62,  141,  217,  133,   34,  60,  4,    8,     8,     60+8+9,   23,     89,    60+8+45,   8,   -1,   -1,  -1,   -1,   -1,    -1,     30,    -1,   -1,   -1,     -1,     -1,    2,   227}} 
     };
 
     inline static const std::map<std::string, std::vector<double>> voltage_presets = {
@@ -406,21 +407,22 @@ class DDR5 : public IDRAM, public Implementation {
       int rate_id = [](int rate) -> int {
         switch (rate) {
           case 3200:  return 0;
+          case 8800:  return 1;
           default:    return -1;
         }
       }(m_timing_vals("rate"));
 
-      constexpr int nRRDL_TABLE[3][1] = {
-      // 3200  
-        { 5, },  // x4
-        { 5, },  // x8
-        { 5, },  // x16
+      constexpr int nRRDL_TABLE[3][2] = {
+      // 3200, 8800
+        { 5, 18},  // x4
+        { 5, 18},  // x8
+        { 5, 18},  // x16
       };
-      constexpr int nFAW_TABLE[3][1] = {
-      // 3200  
-        { 40, },  // x4
-        { 32, },  // x8
-        { 32, },  // x16
+      constexpr int nFAW_TABLE[3][2] = {
+      // 3200, 8800
+        { 40, 33},  // x4
+        { 32, 33},  // x8
+        { 32, 41},  // x16
       };
 
       if (dq_id != -1 && rate_id != -1) {
@@ -429,9 +431,9 @@ class DDR5 : public IDRAM, public Implementation {
       }
 
       // tCCD_L_WR2 (with RMW) table
-      constexpr int nCCD_L_WR2_TABLE[1] = {
-      // 3200  
-        32,
+      constexpr int nCCD_L_WR2_TABLE[2] = {
+      // 3200, 8800
+        32, 45
       };
       if (dq_id == 0) {
         m_timing_vals("nCCDL_WR") = nCCD_L_WR2_TABLE[rate_id];

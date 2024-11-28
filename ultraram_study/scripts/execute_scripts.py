@@ -1,9 +1,7 @@
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 import subprocess
 import time
 import argparse
-import tqdm
 
 from config import *
 
@@ -20,6 +18,8 @@ def run_slurm(commands):
     time.sleep(SLURM_SUBMIT_DELAY)
 
 def run_personal(commands):
+  from concurrent.futures import ThreadPoolExecutor, as_completed
+  import tqdm
   def run_command(command):
     try:
       result = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)

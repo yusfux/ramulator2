@@ -19,7 +19,10 @@ PERS_NUM_THREADS = 12
 #-------------------------------------------------------------------------------
 
 import pandas as pd
-df = pd.read_csv('area_scaling.csv', skipinitialspace=True)
+import pathlib
+
+full_path = pathlib.Path(__file__).parent.parent.resolve()
+df = pd.read_csv(f'{full_path}/area_scaling.csv', skipinitialspace=True)
 
 def add_uram_scales(config, area_scale, voltage_scale):
   val = df[(df['area_scaling_factor'] == area_scale) & (df['vdd_vpp_scaling_factor'] == voltage_scale)]
@@ -54,13 +57,13 @@ row_policy_list = {
 }
 
 refresh_manager_list = {
-  'DDR5'   : ['AllBank'],
+  'DDR5'   : ['AllBank', 'NoRefresh'],
   'URAM5'  : ['NoRefresh'],
 }
 
 timing_list = {
-  'DDR5'   : ['3200AN'],
-  'URAM5'  : ['3200AN'],
+  'DDR5'   : ['8800AN'],
+  'URAM5'  : ['8800AN'],
 }
 
 plugin_list = {

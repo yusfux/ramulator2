@@ -19,10 +19,10 @@ MemorySystem:
     drampower_enable: true
     org:
       preset: URAM5_8Gb_x8
-      channel: 1
+      channel: 2
       rank: 2
     timing:
-      preset: URAM5_3200AN
+      preset: URAM5_8800AN
     RFM:
       BRC: 2
     voltage:

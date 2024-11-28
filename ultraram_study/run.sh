@@ -21,7 +21,7 @@ python3 $SCRIPTS_DIR/setup_scripts.py \
 
 echo "[INFO] Starting Ramulator2 ULTRARAM simulations"
 python3 $SCRIPTS_DIR/execute_scripts.py \
-    # --run_slurm
+    --run_slurm
 
 echo "[INFO] Checking and removing 'run_slurm.sh', 'run_personal.sh' and 'run_scripts' folder if they exist"
 if [ -d "$PWD/run_scripts" ]; then
