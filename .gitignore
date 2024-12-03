@@ -5,6 +5,7 @@ ramulator2
 *.so
 autobuild.sh
 ultraram_study/traces
+ultraram_study/traces_cust
 ultraram_study/results
 ultraram_study/run_scripts
 __pycache__/
