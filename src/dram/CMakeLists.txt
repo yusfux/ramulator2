@@ -4,7 +4,7 @@ target_sources(
   ramulator-dram PRIVATE
   dram.h  node.h  spec.h  lambdas.h  
   
-  lambdas/preq.h  lambdas/rowhit.h  lambdas/rowopen.h lambdas/action.h lambdas/power.h
+  lambdas/preq.h lambdas/rowhit.h lambdas/rowopen.h lambdas/action.h lambdas/power.h
 
   impl/DDR3.cpp
   impl/DDR4.cpp
@@ -17,7 +17,6 @@ target_sources(
   impl/HBM.cpp
   impl/HBM2.cpp
   impl/HBM3.cpp
-  impl/URAM4.cpp
   impl/URAM5.cpp
 )
 

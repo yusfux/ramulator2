@@ -29,16 +29,16 @@ def add_uram_scales(config, area_scale, voltage_scale):
   timings = {col.replace('(ns)', ''): float(val[col].iloc[0]) for col in val.columns if col.endswith('(ns)')}
   currents = {col.replace('(ma)', ''): float(val[col].iloc[0]) for col in val.columns if col.endswith('(ma)')}
 
-  config['MemorySystem']['DRAM']['voltageScales'] = {}
-  config['MemorySystem']['DRAM']['currentScales'] = {}
-  config['MemorySystem']['DRAM']['timingScales']  = {}
+  config['MemorySystem']['DRAM']['voltage_scaling_factors'] = {}
+  config['MemorySystem']['DRAM']['current_scaling_factors'] = {}
+  config['MemorySystem']['DRAM']['timing_scaling_factors']  = {}
 
-  config['MemorySystem']['DRAM']['voltageScales']['VDD'] = voltage_scale
-  config['MemorySystem']['DRAM']['voltageScales']['VPP'] = voltage_scale
+  config['MemorySystem']['DRAM']['voltage_scaling_factors']['VDD'] = voltage_scale
+  config['MemorySystem']['DRAM']['voltage_scaling_factors']['VPP'] = voltage_scale
   for current, value in currents.items():
-    config['MemorySystem']['DRAM']['currentScales'][current.upper()] = value
+    config['MemorySystem']['DRAM']['current_scaling_factors'][current.upper()] = value
   for timing, value in timings.items():
-    config['MemorySystem']['DRAM']['timingScales'][timing] = value
+    config['MemorySystem']['DRAM']['timing_scaling_factors'][timing] = value
 
 #-------------------------------------------------------------------------------
 #-------------------- DEFAULT RAMULATOR CONFIGURATION PARAMETERS ---------------
@@ -67,8 +67,8 @@ timing_list = {
 }
 
 plugin_list = {
-  'DDR5'   : [('CommandCounter', 'cmd_counts'), ('RFMManager', '')],
-  'URAM5'  : [('CommandCounter', 'cmd_counts')]
+  'DDR5'   : [('TraceRecorder', 'cmd_trace'), ('CommandCounter', 'cmd_counts')],
+  'URAM5'  : [('TraceRecorder', 'cmd_trace'), ('CommandCounter', 'cmd_counts')]
 }
 
 area_scaling_list = {

@@ -1,4 +1,3 @@
-
 #include "dram/dram.h"
 #include "dram/lambdas.h"
 
@@ -6,13 +5,10 @@ namespace Ramulator {
 
 class URAM5 : public IDRAM, public Implementation {
   RAMULATOR_REGISTER_IMPLEMENTATION(IDRAM, URAM5, "URAM5", "DDR5 based ULTRARAM Device Model")
-  private:
-    int m_RH_radius = -1;
-
 
   public:
     inline static const std::map<std::string, Organization> org_presets = {
-      //   name         density   DQ   Ch Ra Bg Ba   Ro     Co
+      // name            density   DQ  Ch Ra Bg Ba   Ro     Co
       {"URAM5_8Gb_x4",   {8<<10,   4,  {1, 1, 8, 2, 1<<16, 1<<11}}},
       {"URAM5_8Gb_x8",   {8<<10,   8,  {1, 1, 8, 2, 1<<16, 1<<10}}},
       {"URAM5_8Gb_x16",  {8<<10,   16, {1, 1, 4, 2, 1<<16, 1<<10}}},
@@ -22,126 +18,99 @@ class URAM5 : public IDRAM, public Implementation {
       {"URAM5_32Gb_x4",  {32<<10,  4,  {1, 1, 8, 4, 1<<17, 1<<11}}},
       {"URAM5_32Gb_x8",  {32<<10,  8,  {1, 1, 8, 4, 1<<17, 1<<10}}},
       {"URAM5_32Gb_x16", {32<<10,  16, {1, 1, 4, 4, 1<<17, 1<<10}}},
-      // {"URAM5_64Gb_x4",  {64<<10,  4,  {1, 1, 8, 4, 1<<18, 1<<11}}},
-      // {"URAM5_64Gb_x8",  {64<<10,  8,  {1, 1, 8, 4, 1<<18, 1<<10}}},
-      // {"URAM5_64Gb_x16", {64<<10,  16, {1, 1, 4, 4, 1<<18, 1<<10}}},
     };
 
     inline static const std::map<std::string, std::vector<int>> timing_presets = {
-      //   name         rate   nBL  nCL nRCD   nRP  nRAS   nRC   nWR  nRTP nCWL nPPD nCCDS nCCDS_WR nCCDS_WTR nCCDL nCCDL_WR nCCDL_WTR nRRDS nRRDL nFAW nRFC1 nRFC2 nRFCsb nREFI nREFSBRD nRFM1 nRFM2 nRFMsb nDRFMab nDRFMsb nCS, tCK_ps
-      {"URAM5_3200AN",  {3200,   8,  24,  24,   24,   52,   75,   48,   12,  22,  2,    8,     8,     22+8+4,    8,     16,    22+8+16,   8,   -1,   -1,  -1,   -1,   -1,    -1,     30,    -1,   -1,   -1,     -1,     -1,    2,   625}},
-      {"URAM5_3200BN",  {3200,   8,  26,  26,   26,   52,   77,   48,   12,  24,  2,    8,     8,     24+8+4,    8,     16,    24+8+16,   8,   -1,   -1,  -1,   -1,   -1,    -1,     30,    -1,   -1,   -1,     -1,     -1,    2,   625}},
-      {"URAM5_3200C",   {3200,   8,  28,  28,   28,   52,   79,   48,   12,  26,  2,    8,     8,     26+8+4,    8,     16,    26+8+16,   8,   -1,   -1,  -1,   -1,   -1,    -1,     30,    -1,   -1,   -1,     -1,     -1,    2,   625}},
-      {"URAM5_8800AN",  {8800,   8,  62,  62,   62,  141,  217,  133,   34,  60,  4,    8,     8,     60+8+9,   23,     89,    60+8+45,   8,   -1,   -1,  -1,   -1,   -1,    -1,     30,    -1,   -1,   -1,     -1,     -1,    2,   227}} 
+      // name           rate   nBL  nCL nRCD  nRP  nRPRD nRAS  nRC   nWR  nRTP nCWL nPPD nCCDS nCCDS_WR nCCDS_WTR nCCDL nCCDL_WR nCCDL_WTR nRRDS nRRDL nFAW nCS, tCK_ps
+      {"URAM5_3200AN",  {3200,  8,  24,  24,  24,  24,   52,   75,   48,   12,  22,  2,    8,     8,     22+8+4,    8,     16,    22+8+16,   8,   -1,   -1,  2,   625}},
+      {"URAM5_3200BN",  {3200,  8,  26,  26,  26,  26,   52,   77,   48,   12,  24,  2,    8,     8,     24+8+4,    8,     16,    24+8+16,   8,   -1,   -1,  2,   625}},
+      {"URAM5_3200C",   {3200,  8,  28,  28,  28,  28,   52,   79,   48,   12,  26,  2,    8,     8,     26+8+4,    8,     16,    26+8+16,   8,   -1,   -1,  2,   625}},
+      {"URAM5_8800AN",  {8800,  8,  62,  62,  62,  62,  141,  217,  133,   34,  60,  4,    8,     8,     60+8+9,   23,     89,    60+8+45,   8,   -1,   -1,  2,   227}} 
     };
 
     inline static const std::map<std::string, std::vector<double>> voltage_presets = {
-      //   name          VDD      VPP
-      {"Default",       {1.1,     1.8}},
+      // name      VDD  VPP
+      {"Default", {1.1, 1.8}},
     };
 
     inline static const std::map<std::string, std::vector<double>> current_presets = {
-      // name           IDD0  IDD2N   IDD3N   IDD4R   IDD4W   IDD5B   IPP0  IPP2N  IPP3N  IPP4R  IPP4W  IPP5B
-      {"Default",       {60,   50,     55,     145,    145,    362,     3,    3,     3,     3,     3,     48}},
+      // name     IDD0  IDD2N  IDD3N  IDD4R  IDD4W  IDD5B  IPP0  IPP2N  IPP3N  IPP4R  IPP4W  IPP5B
+      {"Default", {60,    50,   55,    145,   145,   362,    3,    3,     3,     3,     3,    48}},
     };
-  /************************************************
-   *                Organization
-   ***********************************************/   
+
+    /***********************************************
+    *                Organization
+    ***********************************************/
     const int m_internal_prefetch_size = 16;
 
     inline static constexpr ImplDef m_levels = {
       "channel", "rank", "bankgroup", "bank", "row", "column",    
     };
 
-
-  /************************************************
-   *             Requests & Commands
-   ***********************************************/
+    /***********************************************
+    *             Requests & Commands
+    ***********************************************/
     inline static constexpr ImplDef m_commands = {
-      "ACT", 
-      "PRE", "PREA", "PREsb",
-      "RD",  "WR",  "RDA",  "WRA",
-      "REFab",  "REFsb", "REFab_end", "REFsb_end",
-      "RFMab",  "RFMsb", "RFMab_end", "RFMsb_end",
-      "DRFMab", "DRFMsb", "DRFMab_end", "DRFMsb_end",
+      "ACT",
+      "PRE",    "PREsb",
+      "PRERD",  "PRERDsb",
+      "RD",     "WR",     "RDA",     "WRA"
     };
 
     inline static const ImplLUT m_command_scopes = LUT (
       m_commands, m_levels, {
-        {"ACT",   "row"},
-        {"PRE",   "bank"},   {"PREA",   "rank"},   {"PREsb", "bank"},
-        {"RD",    "column"}, {"WR",     "column"}, {"RDA",   "column"}, {"WRA",   "column"},
-        {"REFab",  "rank"},  {"REFsb",  "bank"}, {"REFab_end",  "rank"},  {"REFsb_end",  "bank"},
-        {"RFMab",  "rank"},  {"RFMsb",  "bank"}, {"RFMab_end",  "rank"},  {"RFMsb_end",  "bank"},
-        {"DRFMab", "rank"},  {"DRFMsb", "bank"}, {"DRFMab_end", "rank"},  {"DRFMsb_end", "bank"},
+        {"ACT",     "row"},
+        {"PRE",    "bank"}, {"PREsb",      "bank"},
+        {"PRERD",  "bank"}, {"PRERDsb",    "bank"},
+        {"RD",   "column"}, {"WR",       "column"}, {"RDA", "column"}, {"WRA", "column"}
       }
     );
 
     inline static const ImplLUT m_command_meta = LUT<DRAMCommandMeta> (
       m_commands, {
-                      // open?   close?   access?  refresh?
-        {"ACT",         {true,   false,   false,   false}},
-        {"PRE",         {false,  true,    false,   false}},
-        {"PREA",        {false,  true,    false,   false}},
-        {"PREsb",       {false,  true,    false,   false}},
-        {"RD",          {false,  false,   true,    false}},
-        {"WR",          {false,  false,   true,    false}},
-        {"RDA",         {false,  true,    true,    false}},
-        {"WRA",         {false,  true,    true,    false}},
-        {"REFab",       {false,  false,   false,   true }},
-        {"REFsb",       {false,  false,   false,   true }},
-        {"REFab_end",   {false,  true,    false,   false}},
-        {"REFsb_end",   {false,  true,    false,   false}},
-        {"RFMab",       {false,  false,   false,   true }},
-        {"RFMsb",       {false,  false,   false,   true }},
-        {"RFMab_end",   {false,  true,    false,   false}},
-        {"RFMsb_end",   {false,  true,    false,   false}},
-        {"DRFMab",      {false,  false,   false,   true }},
-        {"DRFMsb",      {false,  false,   false,   true }},
-        {"DRFMab_end",  {false,  true,    false,   false}},
-        {"DRFMsb_end",  {false,  true,    false,   false}},
+        //               open?  close?  access?  refresh?  samebank?
+        {"ACT",         {true,  false,  false,   false,    false}},
+        {"PRE",         {false, true,   false,   false,    false}},
+        {"PREsb",       {false, true,   false,   false,    true }},
+        {"PRERD",       {false, true,   false,   false,    false}},
+        {"PRERDsb",     {false, true,   false,   false,    true }},
+        {"RD",          {false, false,  true,    false,    false}},
+        {"WR",          {false, false,  true,    false,    false}},
+        {"RDA",         {false, true,   true,    false,    false}},
+        {"WRA",         {false, true,   true,    false,    false}}
       }
     );
 
     inline static constexpr ImplDef m_requests = {
-      "read", "write", 
-      "all-bank-refresh", "same-bank-refresh", 
-      "rfm", "same-bank-rfm",
-      "directed-rfm", "same-bank-directed-rfm",
-      "open-row", "close-row"
+      "read",     "write", 
+      "open-row", "close-row", "close-ro-row"
     };
 
     inline static const ImplLUT m_request_translations = LUT (
       m_requests, m_commands, {
-        {"read", "RD"}, {"write", "WR"}, 
-        {"all-bank-refresh", "REFab"}, {"same-bank-refresh", "REFsb"}, 
-        {"rfm", "RFMab"}, {"same-bank-rfm", "RFMsb"}, 
-        {"directed-rfm", "DRFMab"}, {"same-bank-directed-rfm", "DRFMsb"}, 
-        {"open-row", "ACT"}, {"close-row", "PRE"}
+        {"read",      "RD"}, {"write",      "WR"}, 
+        {"open-row", "ACT"}, {"close-row", "PRE"}, {"close-ro-row", "PRERD"}
       }
     );
 
-  /************************************************
-   *                   Timing
-   ***********************************************/
+    /***********************************************
+    *                   Timing
+    ***********************************************/
     inline static constexpr ImplDef m_timings = {
       "rate", 
-      "nBL", "nCL", "nRCD", "nRP", "nRAS", "nRC", "nWR", "nRTP", "nCWL",
+      "nBL", "nCL", "nRCD", "nRP", "nRPRD", "nRAS", "nRC", "nWR", "nRTP", "nCWL",
       "nPPD",
-      "nCCDS", "nCCDS_WR", "nCCDS_WTR", 
-      "nCCDL", "nCCDL_WR", "nCCDL_WTR", 
+      "nCCDS", "nCCDS_WR", "nCCDS_WTR",
+      "nCCDL", "nCCDL_WR", "nCCDL_WTR",
       "nRRDS", "nRRDL",
       "nFAW",
-      "nRFC1", "nRFC2", "nRFCsb", "nREFI", "nREFSBRD",
-      "nRFM1", "nRFM2", "nRFMsb", 
-      "nDRFMab", "nDRFMsb", 
       "nCS",
       "tCK_ps"
     };
    
-  /************************************************
-   *                   Power
-   ***********************************************/
+    /***********************************************
+    *                   Power
+    ***********************************************/
     inline static constexpr ImplDef m_voltages = {
       "VDD", "VPP"
     };
@@ -152,24 +121,25 @@ class URAM5 : public IDRAM, public Implementation {
     };
 
     inline static constexpr ImplDef m_cmds_counted = {
-      "ACT", "PRE", "RD", "WR", "REF", "RFM"
+      "ACT", "PRE", "PRERD", "RD", "WR",
     };
 
-  /************************************************
-   *                 Node States
-   ***********************************************/
+    /***********************************************
+    *                 Node States
+    ***********************************************/
+    //[TODO] I want to get rid of the "Refreshing" state but need to edit power lambdas first
     inline static constexpr ImplDef m_states = {
-       "Opened", "Closed", "PowerUp", "N/A", "Refreshing"
+      "Opened", "Closed", "PowerUp", "N/A", "Dirty", "Refreshing"
     };
 
     inline static const ImplLUT m_init_states = LUT (
       m_levels, m_states, {
-        {"channel",   "N/A"}, 
+        {"channel",   "N/A"    }, 
         {"rank",      "PowerUp"},
-        {"bankgroup", "N/A"},
-        {"bank",      "Closed"},
-        {"row",       "Closed"},
-        {"column",    "N/A"},
+        {"bankgroup", "N/A"    },
+        {"bank",      "Closed" },
+        {"row",       "Closed" },
+        {"column",    "N/A"    },
       }
     );
 
@@ -177,6 +147,7 @@ class URAM5 : public IDRAM, public Implementation {
     struct Node : public DRAMNodeBase<URAM5> {
       Node(URAM5* dram, Node* parent, int level, int id) : DRAMNodeBase<URAM5>(dram, parent, level, id) {};
     };
+
     std::vector<Node*> m_channels;
     
     FuncMatrix<ActionFunc_t<Node>>  m_actions;
@@ -185,18 +156,8 @@ class URAM5 : public IDRAM, public Implementation {
     FuncMatrix<RowopenFunc_t<Node>> m_rowopens;
     FuncMatrix<PowerFunc_t<Node>>   m_powers;
 
-    double s_total_rfm_energy = 0.0;
-    double s_total_ref_energy = 0.0;
     double s_total_pre_energy = 0.0;
-
-    std::vector<size_t> s_total_rfm_cycles;
-
-  /************************************************
-   *                 RFM Related
-   ***********************************************/
-  public:
-    int m_BRC = 2;
-
+    double s_total_prerd_energy = 0.0;
 
   public:
     void tick() override {
@@ -238,26 +199,7 @@ class URAM5 : public IDRAM, public Implementation {
 
     void check_future_action(int command, const AddrVec_t& addr_vec) {
       switch (command) {
-        case m_commands("REFab"):
-          m_future_actions.push_back({command, addr_vec, m_clk + m_timing_vals("nRFC1") - 1});
-          break;
-        case m_commands("REFsb"):
-          m_future_actions.push_back({command, addr_vec, m_clk + m_timing_vals("nRFCsb") - 1});
-          break;
-        case m_commands("RFMab"):
-          m_future_actions.push_back({command, addr_vec, m_clk + m_timing_vals("nRFM1") - 1});
-          break;
-        case m_commands("RFMsb"):
-          m_future_actions.push_back({command, addr_vec, m_clk + m_timing_vals("nRFMsb") - 1});
-          break;
-        case m_commands("DRFMab"):
-          m_future_actions.push_back({command, addr_vec, m_clk + m_timing_vals("nDRFMab") - 1});
-          break;
-        case m_commands("DRFMsb"):
-          m_future_actions.push_back({command, addr_vec, m_clk + m_timing_vals("nDRFMsb") - 1});
-          break;
         default:
-          // Other commands do not require future actions
           break;
       }
     }
@@ -265,32 +207,7 @@ class URAM5 : public IDRAM, public Implementation {
     void handle_future_action(int command, const AddrVec_t& addr_vec) {
       int channel_id = addr_vec[m_levels["channel"]];
       switch (command) {
-        case m_commands("REFab"):
-          m_channels[channel_id]->update_powers(m_commands("REFab_end"), addr_vec, m_clk);
-          m_channels[channel_id]->update_states(m_commands("REFab_end"), addr_vec, m_clk);
-          break;
-        case m_commands("REFsb"):
-          m_channels[channel_id]->update_powers(m_commands("REFsb_end"), addr_vec, m_clk);
-          m_channels[channel_id]->update_states(m_commands("REFsb_end"), addr_vec, m_clk);
-          break;
-        case m_commands("RFMab"):
-          m_channels[channel_id]->update_powers(m_commands("RFMab_end"), addr_vec, m_clk);
-          m_channels[channel_id]->update_states(m_commands("RFMab_end"), addr_vec, m_clk);
-          break;
-        case m_commands("RFMsb"):
-          m_channels[channel_id]->update_powers(m_commands("RFMsb_end"), addr_vec, m_clk);
-          m_channels[channel_id]->update_states(m_commands("RFMsb_end"), addr_vec, m_clk);
-          break;
-        case m_commands("DRFMab"):
-          m_channels[channel_id]->update_powers(m_commands("DRFMab_end"), addr_vec, m_clk);
-          m_channels[channel_id]->update_states(m_commands("DRFMab_end"), addr_vec, m_clk);
-          break;
-        case m_commands("DRFMsb"):
-          m_channels[channel_id]->update_powers(m_commands("DRFMsb_end"), addr_vec, m_clk);
-          m_channels[channel_id]->update_states(m_commands("DRFMsb_end"), addr_vec, m_clk);
-          break;
         default:
-          // Other commands do not require future actions
           break;
       }
     };
@@ -363,13 +280,6 @@ class URAM5 : public IDRAM, public Implementation {
             m_organization.density
         );
       }
-      int num_channels = m_organization.count[m_levels["channel"]];
-      int num_ranks = m_organization.count[m_levels["rank"]];
-      s_total_rfm_cycles.resize(num_channels * num_ranks, 0);
-
-      for (int r = 0; r < num_channels * num_ranks; r++) {
-        register_stat(s_total_rfm_cycles[r]).name("total_rfm_cycles_rank{}", r);
-      }
     };
 
     void set_timing_vals() {
@@ -389,7 +299,7 @@ class URAM5 : public IDRAM, public Implementation {
       // Check for rate (in MT/s), and if provided, calculate and set tCK (in picosecond)
       if (auto dq = param_group("timing").param<int>("rate").optional()) {
         if (preset_provided) {
-          throw ConfigurationError("Cannot change the transfer rate of {} when using a speed preset !", get_name());
+          throw ConfigurationError("Cannot change the transfer rate of {} when using a speed preset!", get_name());
         }
         m_timing_vals("rate") = *dq;
       }
@@ -416,15 +326,15 @@ class URAM5 : public IDRAM, public Implementation {
 
       constexpr int nRRDL_TABLE[3][2] = {
       // 3200, 8800
-        { 5, 18},  // x4
-        { 5, 18},  // x8
-        { 5, 18},  // x16
+        {5,    18}, // x4
+        {5,    18}, // x8
+        {5,    18}, // x16
       };
       constexpr int nFAW_TABLE[3][2] = {
       // 3200, 8800  
-        { 40, 33},  // x4
-        { 32, 33},  // x8
-        { 32, 41},  // x16
+        {40,   33}, // x4
+        {32,   33}, // x8
+        {32,   41}, // x16
       };
 
       if (dq_id != -1 && rate_id != -1) {
@@ -435,58 +345,11 @@ class URAM5 : public IDRAM, public Implementation {
       // tCCD_L_WR2 (with RMW) table
       constexpr int nCCD_L_WR2_TABLE[2] = {
       // 3200, 8800 
-        32, 45
+        32,    45
       };
       if (dq_id == 0) {
         m_timing_vals("nCCDL_WR") = nCCD_L_WR2_TABLE[rate_id];
       }
-
-      // Refresh timings
-      // tRFC table (unit is nanosecond!)
-      constexpr int tRFC_TABLE[2][3] = {
-      //  8Gb   16Gb  32Gb  
-        { 195,  295,  410 }, // Normal refresh (tRFC1)
-        { 130,  160,  220 }, // FGR 2x (tRFC2)
-      };
-
-      // tRFCsb table (unit is nanosecond!)
-      constexpr int tRFCsb_TABLE[1][3] = {
-      //  8Gb   16Gb  32Gb  
-        { 115,  130,  190 }, // Normal refresh (tRFC1)
-      };
-
-      // tREFI(base) table (unit is nanosecond!)
-      constexpr int tREFI_BASE = 3900;
-      int density_id = [](int density_Mb) -> int { 
-        switch (density_Mb) {
-          case 8192:  return 0;
-          case 16384: return 1;
-          case 32768: return 2;
-          default:    return -1;
-        }
-      }(m_organization.density);
-
-      m_RH_radius = param<int>("RH_radius").desc("The number of rows to refresh on each side").default_val(2);
-
-      m_timing_vals("nRFC1")  = JEDEC_rounding_DDR5(tRFC_TABLE[0][density_id], tCK_ps);
-      m_timing_vals("nRFC2")  = JEDEC_rounding_DDR5(tRFC_TABLE[1][density_id], tCK_ps);
-      m_timing_vals("nRFCsb") = JEDEC_rounding_DDR5(tRFCsb_TABLE[0][density_id], tCK_ps);
-      m_timing_vals("nREFI")  = JEDEC_rounding_DDR5(tREFI_BASE, tCK_ps);
-
-      m_timing_vals("nRFM1")  = m_timing_vals("nRFC1");
-      m_timing_vals("nRFM2")  = m_timing_vals("nRFC2");
-      m_timing_vals("nRFMsb") = m_timing_vals("nRFCsb") * m_RH_radius;
-
-      // tRRF table (unit is nanosecond!)
-      constexpr int tRRFsb_TABLE[2][3] = {
-      //  8Gb 16Gb 32Gb  
-        { 70,  70,  70 }, // tRRFab
-        { 60,  60,  60 }, // tRRFsb
-      };
-      m_BRC = param_group("RFM").param<int>("BRC").default_val(2);
-      m_timing_vals("nDRFMab") = 2 * m_BRC * JEDEC_rounding_DDR5(tRRFsb_TABLE[0][density_id], tCK_ps);
-      m_timing_vals("nDRFMsb") = 2 * m_BRC * JEDEC_rounding_DDR5(tRRFsb_TABLE[1][density_id], tCK_ps);
-
 
       // Overwrite timing parameters with any user-provided value
       // Rate and tCK should not be overwritten
@@ -502,12 +365,15 @@ class URAM5 : public IDRAM, public Implementation {
         }
       }
 
+      // Scale timing parameters with any user-provided constants
+      // Rate and tCK should not be overwritten
       for (int i = 1; i < m_timings.size() - 1; i++) {
-        auto timing_name = std::string(m_timings(i));
-        if (auto provided_timing = param_group("timingScales").param<float>(timing_name.replace(0, 1, "t")).optional()) {
+        auto timing_name = std::string(m_timings(i)).replace(0, 1, "t");
+        if (auto provided_timing = param_group("timing_scaling_factors").param<float>(timing_name).optional()) {
           m_timing_vals(i) = *provided_timing * m_timing_vals(i);
         }
       }
+      m_timing_vals(m_timings["nRAS"]) = m_timing_vals(m_timings["nRCD"]);
 
       // Check if there is any uninitialized timings
       for (int i = 0; i < m_timing_vals.size(); i++) {
@@ -544,26 +410,9 @@ class URAM5 : public IDRAM, public Implementation {
           /// CAS <-> CAS between sibling ranks, nCS (rank switching) is needed for new DQS
           {.level = "rank", .preceding = {"RD", "RDA"}, .following = {"RD", "RDA", "WR", "WRA"}, .latency = V("nBL") + V("nCS"), .is_sibling = true},
           {.level = "rank", .preceding = {"WR", "WRA"}, .following = {"RD", "RDA"}, .latency = V("nCL")  + V("nBL") + V("nCS") - V("nCWL"), .is_sibling = true},
-          /// CAS <-> PREab
-          {.level = "rank", .preceding = {"RD"}, .following = {"PREA"}, .latency = V("nRTP")},
-          {.level = "rank", .preceding = {"WR"}, .following = {"PREA"}, .latency = V("nCWL") + V("nBL") + V("nWR")},          
           /// RAS <-> RAS
-          {.level = "rank", .preceding = {"ACT"}, .following = {"ACT"}, .latency = V("nRRDS")},          
-          {.level = "rank", .preceding = {"ACT"}, .following = {"ACT"}, .latency = V("nFAW"), .window = 4},          
-          {.level = "rank", .preceding = {"ACT"}, .following = {"PREA"}, .latency = V("nRAS")},          
-          {.level = "rank", .preceding = {"PREA"}, .following = {"ACT"}, .latency = V("nRP")},          
-          /// RAS <-> REF
-          {.level = "rank", .preceding = {"ACT"}, .following = {"REFab", "RFMab", "DRFMab"}, .latency = V("nRC")},          
-          {.level = "rank", .preceding = {"PRE", "PREsb"}, .following = {"REFab", "RFMab", "DRFMab"}, .latency = V("nRP")},          
-          {.level = "rank", .preceding = {"PREA"}, .following = {"REFab", "RFMab", "DRFMab", "REFsb", "RFMsb", "DRFMsb"}, .latency = V("nRP")},          
-          {.level = "rank", .preceding = {"RDA"}, .following = {"REFab", "RFMab", "DRFMab"}, .latency = V("nRP") + V("nRTP")},          
-          {.level = "rank", .preceding = {"WRA"}, .following = {"REFab", "RFMab", "DRFMab"}, .latency = V("nCWL") + V("nBL") + V("nWR") + V("nRP")},          
-          {.level = "rank", .preceding = {"REFab"}, .following = {"ACT", "PREA", "REFab", "RFMab", "DRFMab", "REFsb", "RFMsb", "DRFMsb"}, .latency = V("nRFC1")},          
-          {.level = "rank", .preceding = {"RFMab"}, .following = {"ACT", "PREA", "REFab", "RFMab", "DRFMab", "REFsb", "RFMsb", "DRFMsb"}, .latency = V("nRFM1")},          
-          {.level = "rank", .preceding = {"DRFMab"}, .following = {"ACT", "PREA", "REFab", "RFMab", "DRFMab", "REFsb", "RFMsb", "DRFMsb"}, .latency = V("nDRFMab")},          
-          {.level = "rank", .preceding = {"REFsb"},  .following = {"PREA", "REFab", "RFMab", "DRFMab"}, .latency = V("nRFCsb")},  
-          {.level = "rank", .preceding = {"RFMsb"},  .following = {"PREA", "REFab", "RFMab", "DRFMab"}, .latency = V("nRFMsb")},  
-          {.level = "rank", .preceding = {"DRFMsb"}, .following = {"PREA", "REFab", "RFMab", "DRFMab"}, .latency = V("nDRFMsb")},  
+          {.level = "rank", .preceding = {"ACT"},    .following = {"ACT"},   .latency = V("nRRDS")},          
+          {.level = "rank", .preceding = {"ACT"},    .following = {"ACT"},   .latency = V("nFAW"), .window = 4},          
           /*** Same Bank Group ***/ 
           /// CAS <-> CAS
           {.level = "bankgroup", .preceding = {"RD", "RDA"}, .following = {"RD", "RDA"}, .latency = V("nCCDL")},          
@@ -573,20 +422,21 @@ class URAM5 : public IDRAM, public Implementation {
           {.level = "bankgroup", .preceding = {"ACT"}, .following = {"ACT"}, .latency = V("nRRDL")},  
 
           /*** Bank ***/ 
-          {.level = "bank", .preceding = {"ACT"}, .following = {"ACT", "REFsb", "RFMsb", "DRFMsb"}, .latency = V("nRC")},  
-          {.level = "bank", .preceding = {"ACT"}, .following = {"RD", "RDA", "WR", "WRA"}, .latency = V("nRCD")},  
-          {.level = "bank", .preceding = {"ACT"}, .following = {"PRE", "PREsb"}, .latency = V("nRAS")},  
-          {.level = "bank", .preceding = {"PRE", "PREsb"}, .following = {"ACT", "REFsb", "RFMsb", "DRFMsb"}, .latency = V("nRP")},  
-          {.level = "bank", .preceding = {"RD"},  .following = {"PRE", "PREsb"}, .latency = V("nRTP")},  
+          //TODO: if the below lines means 'following' is being sent directly after 'preceding', we can be sure that no WR commands are being sent after ACT
+          {.level = "bank", .preceding = {"ACT"}, .following = {"ACT"}, .latency = V("nRC")},
+          // {.level = "bank", .preceding = {"ACT"}, .following = {"ACT"}, .latency = V("nRAS") + V("nRPRD")},
+          {.level = "bank", .preceding = {"ACT"}, .following = {"RD", "RDA", "WR", "WRA"}, .latency = V("nRCD")},
+          {.level = "bank", .preceding = {"ACT"}, .following = {"PRE", "PREsb"}, .latency = V("nRAS")},
+          {.level = "bank", .preceding = {"ACT"}, .following = {"PRERD", "PRERDsb"}, .latency = V("nRAS")},
+          {.level = "bank", .preceding = {"PRE", "PREsb"}, .following = {"ACT"}, .latency = V("nRP")},
+          {.level = "bank", .preceding = {"PRERD", "PRERDsb"}, .following = {"ACT"}, .latency = V("nRPRD")},
+          {.level = "bank", .preceding = {"RD"},  .following = {"PRE", "PREsb"}, .latency = V("nRTP")},
+          {.level = "bank", .preceding = {"RD"},  .following = {"PRERD", "PRERDsb"}, .latency = V("nRTP")},
           {.level = "bank", .preceding = {"WR"},  .following = {"PRE", "PREsb"}, .latency = V("nCWL") + V("nBL") + V("nWR")},  
-          {.level = "bank", .preceding = {"RDA"}, .following = {"ACT", "REFsb", "RFMsb", "DRFMsb"}, .latency = V("nRTP") + V("nRP")},  
-          {.level = "bank", .preceding = {"WRA"}, .following = {"ACT", "REFsb", "RFMsb", "DRFMsb"}, .latency = V("nCWL") + V("nBL") + V("nWR") + V("nRP")},  
-          {.level = "bank", .preceding = {"WR"},  .following = {"RDA"}, .latency = V("nCWL") + V("nBL") + V("nWR") - V("nRTP")},  
-
-          /// Same-bank refresh/RFM timings. The timings of the bank in other BGs will be updated by action function
-          {.level = "bank", .preceding = {"REFsb"},  .following = {"ACT", "REFsb", "RFMsb", "DRFMsb"}, .latency = V("nRFCsb")},  
-          {.level = "bank", .preceding = {"RFMsb"},  .following = {"ACT", "REFsb", "RFMsb", "DRFMsb"}, .latency = V("nRFMsb")},  
-          {.level = "bank", .preceding = {"DRFMsb"}, .following = {"ACT", "REFsb", "RFMsb", "DRFMsb"}, .latency = V("nDRFMsb")},  
+          {.level = "bank", .preceding = {"WR"},  .following = {"PRERD", "PRERDsb"}, .latency = V("nCWL") + V("nBL") + V("nWR")},
+          {.level = "bank", .preceding = {"RDA"}, .following = {"ACT"}, .latency = V("nRTP") + V("nRP")},
+          {.level = "bank", .preceding = {"WRA"}, .following = {"ACT"}, .latency = V("nCWL") + V("nBL") + V("nWR") + V("nRP")},
+          {.level = "bank", .preceding = {"WR"},  .following = {"RDA"}, .latency = V("nCWL") + V("nBL") + V("nWR") - V("nRTP")},
         }
       );
       #undef V
@@ -596,70 +446,117 @@ class URAM5 : public IDRAM, public Implementation {
     void set_actions() {
       m_actions.resize(m_levels.size(), std::vector<ActionFunc_t<Node>>(m_commands.size()));
 
-      // Rank Actions
-      m_actions[m_levels["rank"]][m_commands["PREA"]] = Lambdas::Action::Rank::PREab<URAM5>;
-      m_actions[m_levels["rank"]][m_commands["REFab"]] = Lambdas::Action::Rank::REFab<URAM5>;
-      m_actions[m_levels["rank"]][m_commands["REFab_end"]] = Lambdas::Action::Rank::REFab_end<URAM5>;
-      m_actions[m_levels["rank"]][m_commands["RFMab"]] = Lambdas::Action::Rank::REFab<URAM5>;
-      m_actions[m_levels["rank"]][m_commands["RFMab_end"]] = Lambdas::Action::Rank::REFab_end<URAM5>;
-      m_actions[m_levels["rank"]][m_commands["DRFMab"]] = Lambdas::Action::Rank::REFab<URAM5>;
-      m_actions[m_levels["rank"]][m_commands["DRFMab_end"]] = Lambdas::Action::Rank::REFab_end<URAM5>;
-      
       // Same-Bank Actions.
-      m_actions[m_levels["bankgroup"]][m_commands["PREsb"]] = Lambdas::Action::BankGroup::PREsb<URAM5>;
-
-      // We call update_timing for the banks in other BGs here
-      m_actions[m_levels["bankgroup"]][m_commands["REFsb"]]  = Lambdas::Action::BankGroup::REFsb<URAM5>;
-      m_actions[m_levels["bankgroup"]][m_commands["REFsb_end"]]  = Lambdas::Action::BankGroup::REFsb_end<URAM5>;
-      m_actions[m_levels["bankgroup"]][m_commands["RFMsb"]]  = Lambdas::Action::BankGroup::REFsb<URAM5>;
-      m_actions[m_levels["bankgroup"]][m_commands["RFMsb_end"]]  = Lambdas::Action::BankGroup::REFsb_end<URAM5>;
-      m_actions[m_levels["bankgroup"]][m_commands["DRFMsb"]] = Lambdas::Action::BankGroup::REFsb<URAM5>;
-      m_actions[m_levels["bankgroup"]][m_commands["DRFMsb_end"]] = Lambdas::Action::BankGroup::REFsb_end<URAM5>;
+      m_actions[m_levels["bankgroup"]][m_commands["PREsb"]]   = Lambdas::Action::BankGroup::PREsb<URAM5>;
+      m_actions[m_levels["bankgroup"]][m_commands["PRERDsb"]] = Lambdas::Action::BankGroup::PREsb<URAM5>;
 
       // Bank actions
-      m_actions[m_levels["bank"]][m_commands["ACT"]] = Lambdas::Action::Bank::ACT<URAM5>;
-      m_actions[m_levels["bank"]][m_commands["PRE"]] = Lambdas::Action::Bank::PRE<URAM5>;
-      m_actions[m_levels["bank"]][m_commands["RDA"]] = Lambdas::Action::Bank::PRE<URAM5>;
-      m_actions[m_levels["bank"]][m_commands["WRA"]] = Lambdas::Action::Bank::PRE<URAM5>;
+      m_actions[m_levels["bank"]][m_commands["ACT"]]   = Lambdas::Action::Bank::ACT<URAM5>;
+      m_actions[m_levels["bank"]][m_commands["PRE"]]   = Lambdas::Action::Bank::PRE<URAM5>;
+      m_actions[m_levels["bank"]][m_commands["PRERD"]] = Lambdas::Action::Bank::PRE<URAM5>;
+      m_actions[m_levels["bank"]][m_commands["RDA"]]   = Lambdas::Action::Bank::PRE<URAM5>;
+      m_actions[m_levels["bank"]][m_commands["WRA"]]   = Lambdas::Action::Bank::PRE<URAM5>;
+
+      m_actions[m_levels["bank"]][m_commands["WR"]] = [] (Node* node, int cmd, int target_id, Clk_t clk) {
+        node->m_row_state[target_id] = m_states["Dirty"];
+      };
     };
 
     void set_preqs() {
       m_preqs.resize(m_levels.size(), std::vector<PreqFunc_t<Node>>(m_commands.size()));
 
-      // Rank Preqs
-      m_preqs[m_levels["rank"]][m_commands["REFab"]]  = Lambdas::Preq::Rank::RequireAllBanksClosed<URAM5>;
-      m_preqs[m_levels["rank"]][m_commands["RFMab"]]  = Lambdas::Preq::Rank::RequireAllBanksClosed<URAM5>;
-      m_preqs[m_levels["rank"]][m_commands["DRFMab"]] = Lambdas::Preq::Rank::RequireAllBanksClosed<URAM5>;
+      auto RequireRowOpen = [](typename URAM5::Node* node, int cmd, const AddrVec_t& addr_vec, Clk_t clk) {
+        switch (node->m_state) {
+          case URAM5::m_states["Closed"]: return URAM5::m_commands["ACT"];
+          case URAM5::m_states["Opened"]: {
+            if (node->m_row_state.find(addr_vec[URAM5::m_levels["row"]]) != node->m_row_state.end()) {
+              return cmd;
+            } else {
+              for (const auto& [row, state] : node->m_row_state) {
+                if(state == m_states["Dirty"]) {
+                  return URAM5::m_commands["PRE"];
+                }
+              }
+              return URAM5::m_commands["PRERD"];
+            }
+          }    
+          default: {
+            spdlog::error("[Preq::Bank] Invalid bank state for an RD/WR command!");
+            std::exit(-1);      
+          } 
+        }
+      };
 
-      // Same-Bank Preqs.
-      m_preqs[m_levels["rank"]][m_commands["REFsb"]]  = Lambdas::Preq::Rank::RequireSameBanksClosed<URAM5>;
-      m_preqs[m_levels["rank"]][m_commands["RFMsb"]]  = Lambdas::Preq::Rank::RequireSameBanksClosed<URAM5>;
-      m_preqs[m_levels["rank"]][m_commands["DRFMsb"]] = Lambdas::Preq::Rank::RequireSameBanksClosed<URAM5>;
+      auto RequireBankClosed = [](typename URAM5::Node* node, int cmd, const AddrVec_t& addr_vec, Clk_t clk) {
+        switch (node->m_state) {
+          case URAM5::m_states["Closed"]: return cmd;
+          case URAM5::m_states["Opened"]: {
+            for (const auto& [row, state] : node->m_row_state) {
+              if(state == m_states["Dirty"]) {
+                return m_commands["PRE"];
+              }
+            }
+            return URAM5::m_commands["PRERD"];
+          }
+          default: {
+            spdlog::error("[Preq::Bank] Invalid bank state for an RD/WR command!");
+            std::exit(-1);      
+          } 
+        }
+      };
 
       // Bank Preqs
-      m_preqs[m_levels["bank"]][m_commands["RD"]] = Lambdas::Preq::Bank::RequireRowOpen<URAM5>;
-      m_preqs[m_levels["bank"]][m_commands["WR"]] = Lambdas::Preq::Bank::RequireRowOpen<URAM5>;
-      m_preqs[m_levels["bank"]][m_commands["ACT"]] = Lambdas::Preq::Bank::RequireRowOpen<URAM5>;
-      m_preqs[m_levels["bank"]][m_commands["PRE"]] = Lambdas::Preq::Bank::RequireBankClosed<URAM5>;
+      m_preqs[m_levels["bank"]][m_commands["RD"]]    = RequireRowOpen;
+      m_preqs[m_levels["bank"]][m_commands["WR"]]    = RequireRowOpen;
+      m_preqs[m_levels["bank"]][m_commands["ACT"]]   = RequireRowOpen;
+      m_preqs[m_levels["bank"]][m_commands["PRE"]]   = RequireBankClosed;
+      m_preqs[m_levels["bank"]][m_commands["PRERD"]] = RequireBankClosed;
     };
 
     void set_rowhits() {
       m_rowhits.resize(m_levels.size(), std::vector<RowhitFunc_t<Node>>(m_commands.size()));
 
-      m_rowhits[m_levels["bank"]][m_commands["RD"]] = Lambdas::RowHit::Bank::RDWR<URAM5>;
-      m_rowhits[m_levels["bank"]][m_commands["WR"]] = Lambdas::RowHit::Bank::RDWR<URAM5>;
+      auto RDWR = [](typename URAM5::Node* node, int cmd, int target_id, Clk_t clk) {
+        switch (node->m_state)  {
+          case URAM5::m_states["Closed"]: return false;
+          case URAM5::m_states["Opened"]:
+            if (node->m_row_state.find(target_id) != node->m_row_state.end()) {
+              return true;
+            }
+            else {
+              return false;
+            }
+          default: {
+            spdlog::error("[RowHit::Bank] Invalid bank state for an RD/WR command!");
+            std::exit(-1);      
+          }
+        }
+      };
+
+      m_rowhits[m_levels["bank"]][m_commands["RD"]] = RDWR;
+      m_rowhits[m_levels["bank"]][m_commands["WR"]] = RDWR;
     }
 
 
     void set_rowopens() {
       m_rowopens.resize(m_levels.size(), std::vector<RowhitFunc_t<Node>>(m_commands.size()));
 
-      m_rowopens[m_levels["bank"]][m_commands["RD"]] = Lambdas::RowOpen::Bank::RDWR<URAM5>;
-      m_rowopens[m_levels["bank"]][m_commands["WR"]] = Lambdas::RowOpen::Bank::RDWR<URAM5>;
+      auto RDWR = [](typename URAM5::Node* node, int cmd, int target_id, Clk_t clk) {
+        switch (node->m_state)  {
+          case URAM5::m_states["Closed"]: return false;
+          case URAM5::m_states["Opened"]: return true;
+          default: {
+            spdlog::error("[RowHit::Bank] Invalid bank state for an RD/WR command!");
+            std::exit(-1);      
+          }
+        }
+      };
+
+      m_rowopens[m_levels["bank"]][m_commands["RD"]] = RDWR;
+      m_rowopens[m_levels["bank"]][m_commands["WR"]] = RDWR;
     }
 
     void set_powers() {
-      
       m_drampower_enable = param<bool>("drampower_enable").default_val(false);
 
       if (!m_drampower_enable)
@@ -687,14 +584,14 @@ class URAM5 : public IDRAM, public Implementation {
 
       for (int i = 0; i < m_voltages.size(); i++) {
         auto voltage_val = std::string(m_voltages(i));
-        if (auto provided_voltage = param_group("voltageScales").param<double>(voltage_val).optional()) {
+        if (auto provided_voltage = param_group("voltage_scaling_factors").param<double>(voltage_val).optional()) {
           m_voltage_vals(i) = *provided_voltage * m_voltage_vals(i);
         }
       }
 
       for (int i = 0; i < m_currents.size(); i++) {
         auto current_val = std::string(m_currents(i));
-        if (auto provided_current = param_group("currentScales").param<double>(current_val).optional()) {
+        if (auto provided_current = param_group("current_scaling_factors").param<double>(current_val).optional()) {
           m_current_vals(i) = *provided_current * m_current_vals(i);
         }
       }
@@ -714,47 +611,35 @@ class URAM5 : public IDRAM, public Implementation {
 
       m_powers.resize(m_levels.size(), std::vector<PowerFunc_t<Node>>(m_commands.size()));
 
-      m_powers[m_levels["bank"]][m_commands["ACT"]] = Lambdas::Power::Bank::ACT<URAM5>;
-      m_powers[m_levels["bank"]][m_commands["PRE"]] = Lambdas::Power::Bank::PRE<URAM5>;
-      m_powers[m_levels["bank"]][m_commands["RD"]]  = Lambdas::Power::Bank::RD<URAM5>;
-      m_powers[m_levels["bank"]][m_commands["WR"]]  = Lambdas::Power::Bank::WR<URAM5>;
+      m_powers[m_levels["bank"]][m_commands["ACT"]]   = Lambdas::Power::Bank::ACT<URAM5>;
+      m_powers[m_levels["bank"]][m_commands["PRE"]]   = Lambdas::Power::Bank::PRE<URAM5>;
+      m_powers[m_levels["bank"]][m_commands["PRERD"]] = Lambdas::Power::Bank::PRERD<URAM5>;
+      m_powers[m_levels["bank"]][m_commands["RD"]]    = Lambdas::Power::Bank::RD<URAM5>;
+      m_powers[m_levels["bank"]][m_commands["WR"]]    = Lambdas::Power::Bank::WR<URAM5>;
 
-      // m_powers[m_levels["rank"]][m_commands["REFsb"]] = Lambdas::Power::Rank::REFsb<URAM5>;
-      // m_powers[m_levels["rank"]][m_commands["REFsb_end"]] = Lambdas::Power::Rank::REFsb_end<URAM5>;
-      m_powers[m_levels["rank"]][m_commands["RFMsb"]] = Lambdas::Power::Rank::RFMsb<URAM5>;
-      m_powers[m_levels["rank"]][m_commands["RFMsb_end"]] = Lambdas::Power::Rank::RFMsb_end<URAM5>;
-      // m_powers[m_levels["rank"]][m_commands["DRFMsb"]] = Lambdas::Power::Rank::REFsb<URAM5>;
-      // m_powers[m_levels["rank"]][m_commands["DRFMsb_end"]] = Lambdas::Power::Rank::REFsb_end<URAM5>;
+      m_powers[m_levels["rank"]][m_commands["ACT"]]   = Lambdas::Power::Rank::ACT<URAM5>;
+      m_powers[m_levels["rank"]][m_commands["PRE"]]   = Lambdas::Power::Rank::PRE<URAM5>;
+      m_powers[m_levels["rank"]][m_commands["PRERD"]] = Lambdas::Power::Rank::PRERD<URAM5>;
 
-      m_powers[m_levels["rank"]][m_commands["ACT"]] = Lambdas::Power::Rank::ACT<URAM5>;
-      m_powers[m_levels["rank"]][m_commands["PRE"]] = Lambdas::Power::Rank::PRE<URAM5>;
-      m_powers[m_levels["rank"]][m_commands["PREA"]] = Lambdas::Power::Rank::PREA<URAM5>;
-      m_powers[m_levels["rank"]][m_commands["REFab"]] = Lambdas::Power::Rank::REFab<URAM5>;
-      m_powers[m_levels["rank"]][m_commands["REFab_end"]] = Lambdas::Power::Rank::REFab_end<URAM5>;
-      // m_powers[m_levels["rank"]][m_commands["RFMab"]] = Lambdas::Power::Rank::REFab<URAM5>;
-      // m_powers[m_levels["rank"]][m_commands["RFMab_end"]] = Lambdas::Power::Rank::REFab_end<URAM5>;
-      // m_powers[m_levels["rank"]][m_commands["DRFMab"]] = Lambdas::Power::Rank::REFab<URAM5>;
-      // m_powers[m_levels["rank"]][m_commands["DRFMab_end"]] = Lambdas::Power::Rank::REFab_end<URAM5>;
-
-      m_powers[m_levels["rank"]][m_commands["PREsb"]] = Lambdas::Power::Rank::PREsb<URAM5>;
+      m_powers[m_levels["rank"]][m_commands["PREsb"]]   = Lambdas::Power::Rank::PREsb<URAM5>;
+      m_powers[m_levels["rank"]][m_commands["PRERDsb"]] = Lambdas::Power::Rank::PRERDsb<URAM5>;
 
       // register stats
       register_stat(s_total_background_energy).name("total_background_energy");
-      register_stat(s_total_cmd_energy).name("total_cmd_energy");
-      register_stat(s_total_energy).name("total_energy");
-      register_stat(s_total_rfm_energy).name("total_rfm_energy");
-      register_stat(s_total_ref_energy).name("total_ref_energy");
-      register_stat(s_total_pre_energy).name("total_pre_energy");
+      register_stat(s_total_cmd_energy       ).name("total_cmd_energy");
+      register_stat(s_total_energy           ).name("total_energy");
+      register_stat(s_total_pre_energy       ).name("total_pre_energy");
+      register_stat(s_total_prerd_energy     ).name("total_prerd_energy");
 
             
       for (auto& power_stat : m_power_stats){
         register_stat(power_stat.total_background_energy).name("total_background_energy_rank{}", power_stat.rank_id);
-        register_stat(power_stat.total_cmd_energy).name("total_cmd_energy_rank{}", power_stat.rank_id);
-        register_stat(power_stat.total_energy).name("total_energy_rank{}", power_stat.rank_id);
-        register_stat(power_stat.act_background_energy).name("act_background_energy_rank{}", power_stat.rank_id);
-        register_stat(power_stat.pre_background_energy).name("pre_background_energy_rank{}", power_stat.rank_id);
-        register_stat(power_stat.active_cycles).name("active_cycles_rank{}", power_stat.rank_id);
-        register_stat(power_stat.idle_cycles).name("idle_cycles_rank{}", power_stat.rank_id);
+        register_stat(power_stat.total_cmd_energy       ).name("total_cmd_energy_rank{}",        power_stat.rank_id);
+        register_stat(power_stat.total_energy           ).name("total_energy_rank{}",            power_stat.rank_id);
+        register_stat(power_stat.act_background_energy  ).name("act_background_energy_rank{}",   power_stat.rank_id);
+        register_stat(power_stat.pre_background_energy  ).name("pre_background_energy_rank{}",   power_stat.rank_id);
+        register_stat(power_stat.active_cycles          ).name("active_cycles_rank{}",           power_stat.rank_id);
+        register_stat(power_stat.idle_cycles            ).name("idle_cycles_rank{}",             power_stat.rank_id);
       }
     }
 
@@ -780,12 +665,9 @@ class URAM5 : public IDRAM, public Implementation {
     }
 
     void process_rank_energy(PowerStats& rank_stats, Node* rank_node) {
-      
       Lambdas::Power::Rank::finalize_rank<URAM5>(rank_node, 0, AddrVec_t(), m_clk);
 
-      size_t num_bankgroups = m_organization.count[m_levels["bankgroup"]];
-
-      auto TS = [&](std::string_view timing) { return m_timing_vals(timing); };
+      auto TS = [&](std::string_view timing)  { return m_timing_vals(timing);   };
       auto VE = [&](std::string_view voltage) { return m_voltage_vals(voltage); };
       auto CE = [&](std::string_view current) { return m_current_vals(current); };
 
@@ -798,44 +680,37 @@ class URAM5 : public IDRAM, public Implementation {
                                             * rank_stats.idle_cycles * tCK_ns / 1E3;
 
 
-      double act_cmd_energy  = (VE("VDD") * (CE("IDD0") - CE("IDD3N")) + VE("VPP") * (CE("IPP0") - CE("IPP3N"))) 
+      double act_cmd_energy    = (VE("VDD") * (CE("IDD0") - CE("IDD3N")) + VE("VPP") * (CE("IPP0") - CE("IPP3N"))) 
                                       * rank_stats.cmd_counters[m_cmds_counted("ACT")] * TS("nRAS") * tCK_ns / 1E3;
 
-      double pre_cmd_energy  = (VE("VDD") * (CE("IDD0") - CE("IDD2N")) + VE("VPP") * (CE("IPP0") - CE("IPP2N"))) 
+      double pre_cmd_energy    = (VE("VDD") * (CE("IDD0") - CE("IDD2N")) + VE("VPP") * (CE("IPP0") - CE("IPP2N"))) 
                                       * rank_stats.cmd_counters[m_cmds_counted("PRE")] * TS("nRP")  * tCK_ns / 1E3;
 
-      double rd_cmd_energy   = (VE("VDD") * (CE("IDD4R") - CE("IDD3N")) + VE("VPP") * (CE("IPP4R") - CE("IPP3N"))) 
+      double prerd_cmd_energy  = (VE("VDD") * (CE("IDD0") - CE("IDD2N")) + VE("VPP") * (CE("IPP0") - CE("IPP2N"))) 
+                                      * rank_stats.cmd_counters[m_cmds_counted("PRERD")] * TS("nRPRD")  * tCK_ns / 1E3;
+
+      double rd_cmd_energy     = (VE("VDD") * (CE("IDD4R") - CE("IDD3N")) + VE("VPP") * (CE("IPP4R") - CE("IPP3N"))) 
                                       * rank_stats.cmd_counters[m_cmds_counted("RD")] * TS("nBL") * tCK_ns / 1E3;
 
-      double wr_cmd_energy   = (VE("VDD") * (CE("IDD4W") - CE("IDD3N")) + VE("VPP") * (CE("IPP4W") - CE("IPP3N"))) 
+      double wr_cmd_energy     = (VE("VDD") * (CE("IDD4W") - CE("IDD3N")) + VE("VPP") * (CE("IPP4W") - CE("IPP3N"))) 
                                       * rank_stats.cmd_counters[m_cmds_counted("WR")] * TS("nBL") * tCK_ns / 1E3;
 
-      double ref_cmd_energy  = (VE("VDD") * (CE("IDD5B")) + VE("VPP") * (CE("IPP5B"))) 
-                                      * rank_stats.cmd_counters[m_cmds_counted("REF")] * TS("nRFC1") * tCK_ns / 1E3;
-
-      double rfm_cmd_energy = (VE("VDD") * (CE("IDD0") - CE("IDD3N")) + VE("VPP") * (CE("IPP0") - CE("IPP3N"))) * num_bankgroups
-                                      * rank_stats.cmd_counters[m_cmds_counted("RFM")] * TS("nRFMsb") * tCK_ns / 1E3;
 
       rank_stats.total_background_energy = rank_stats.act_background_energy + rank_stats.pre_background_energy;
       rank_stats.total_cmd_energy = act_cmd_energy 
-                                    + pre_cmd_energy 
+                                    + pre_cmd_energy
+                                    + prerd_cmd_energy
                                     + rd_cmd_energy
-                                    + wr_cmd_energy 
-                                    + ref_cmd_energy
-                                    + rfm_cmd_energy;
+                                    + wr_cmd_energy;
 
       rank_stats.total_energy = rank_stats.total_background_energy + rank_stats.total_cmd_energy;
 
       s_total_background_energy += rank_stats.total_background_energy;
-      s_total_cmd_energy += rank_stats.total_cmd_energy;
-      s_total_energy += rank_stats.total_energy;
-      s_total_rfm_energy += rfm_cmd_energy;
-      s_total_ref_energy += ref_cmd_energy;
-      s_total_pre_energy += pre_cmd_energy;
-
-      s_total_rfm_cycles[rank_stats.rank_id] = rank_stats.cmd_counters[m_cmds_counted("RFM")] * TS("nRFMsb");
+      s_total_cmd_energy        += rank_stats.total_cmd_energy;
+      s_total_energy            += rank_stats.total_energy;
+      s_total_pre_energy        += pre_cmd_energy;
+      s_total_prerd_energy      += prerd_cmd_energy;
     }
 };
-
 
 }        // namespace Ramulator

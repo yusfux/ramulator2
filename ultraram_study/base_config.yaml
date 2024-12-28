@@ -1,7 +1,7 @@
 Frontend:
   impl: SimpleO3
   clock_ratio: 10
-  num_expected_insts: 100000000
+  num_expected_insts: 1000000
   traces: 
     - traces/429.mcf
 
@@ -23,12 +23,13 @@ MemorySystem:
       rank: 2
     timing:
       preset: URAM5_8800AN
-    RFM:
-      BRC: 2
+    timing_scaling_factors:
     voltage:
       preset: Default
+    voltage_scaling_factors:
     current:
       preset: Default
+    current_scaling_factors:
 
   Controller:
     impl: Generic
@@ -39,6 +40,10 @@ MemorySystem:
     RowPolicy:
       impl: OpenRowPolicy
       cap: 8
+    plugins:
+      - ControllerPlugin:
+          impl: CommandCounter
+          path: ./haha.txt
 
   AddrMapper:
     impl: MOP4CLXOR

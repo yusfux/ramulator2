@@ -47,6 +47,12 @@ namespace Bank {
   }
 
   template <class T>
+  void PRERD(typename T::Node* node, int cmd, const AddrVec_t& addr_vec, Clk_t clk) {
+    Bank::debug<T>(node, "Incrementing PRERD counter.", clk);
+    node->m_spec->m_power_stats[Bank::get_flat_rank_id<T>(node)].cmd_counters[T::m_cmds_counted("PRERD")]++;
+  }
+
+  template <class T>
   void RD(typename T::Node* node, int cmd, const AddrVec_t& addr_vec, Clk_t clk) {
     Bank::debug<T>(node, "Incrementing RD counter.", clk);
     node->m_spec->m_power_stats[Bank::get_flat_rank_id<T>(node)].cmd_counters[T::m_cmds_counted("RD")]++;
@@ -155,6 +161,21 @@ namespace Rank {
     Rank::debug<T>(node, "------PRE------", clk);
     auto& cur_power_stats = node->m_spec->m_power_stats[Rank::get_flat_rank_id<T>(node)];
     bool is_rank_going_idle = get_open_bank_count<T>(node) == 1 && get_refreshing_bank_count<T>(node) == 0; // TODO: AND this PRE is targetting the active bank
+
+    if (is_rank_going_idle) {
+      cur_power_stats.active_cycles += clk - cur_power_stats.active_start_cycle;
+      cur_power_stats.idle_start_cycle = clk;
+      std::string msg = "Rank is going idle. active_cycles: " + std::to_string(cur_power_stats.active_cycles) + "    idle_start_cycle: " + std::to_string(cur_power_stats.idle_start_cycle);
+      Rank::debug<T>(node, msg, clk);
+      cur_power_stats.cur_power_state = PowerStats::PowerState::IDLE;
+    }
+  }
+
+  template <class T>
+  void PRERD(typename T::Node* node, int cmd, const AddrVec_t& addr_vec, Clk_t clk) {
+    Rank::debug<T>(node, "------PRERD------", clk);
+    auto& cur_power_stats = node->m_spec->m_power_stats[Rank::get_flat_rank_id<T>(node)];
+    bool is_rank_going_idle = get_open_bank_count<T>(node) == 1;
 
     if (is_rank_going_idle) {
       cur_power_stats.active_cycles += clk - cur_power_stats.active_start_cycle;
@@ -322,6 +343,34 @@ namespace Rank {
     }
 
     cur_power_stats.cmd_counters[T::m_cmds_counted("PRE")] += open_target_banks;
+    if (is_rank_going_idle) {
+      cur_power_stats.active_cycles += clk - cur_power_stats.active_start_cycle;
+      cur_power_stats.idle_start_cycle = clk;
+      std::string msg = "Rank is going idle. active_cycles: " + std::to_string(cur_power_stats.active_cycles) + "    idle_start_cycle: " + std::to_string(cur_power_stats.idle_start_cycle);
+      Bank::debug<T>(node, msg, clk);
+      cur_power_stats.cur_power_state = PowerStats::PowerState::IDLE;
+    }
+  }
+
+  template <class T>
+  void PRERDsb(typename T::Node* node, int cmd, const AddrVec_t& addr_vec, Clk_t clk) {
+    auto& cur_power_stats = node->m_spec->m_power_stats[Rank::get_flat_rank_id<T>(node)];
+
+    int open_target_banks = 0;
+    bool is_rank_going_idle = true;
+    for (auto bankgroup_node : node->m_child_nodes) {
+      for (auto bank_node : bankgroup_node->m_child_nodes) {
+        if (bank_node->m_state == T::m_states["Opened"]) {
+          if (bank_node->m_node_id == addr_vec[T::m_levels["bank"]]) {
+            open_target_banks++;
+          } else {
+            is_rank_going_idle = false;
+          }
+        }
+      }
+    }
+
+    cur_power_stats.cmd_counters[T::m_cmds_counted("PRERD")] += open_target_banks;
     if (is_rank_going_idle) {
       cur_power_stats.active_cycles += clk - cur_power_stats.active_start_cycle;
       cur_power_stats.idle_start_cycle = clk;
